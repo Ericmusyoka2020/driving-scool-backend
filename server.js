@@ -416,5 +416,10 @@ app.patch('/api/notifications/:id/read', async (req, res) => {
   }
 });
 
+// Conditional listening for local development vs Render, export app for Vercel serverless
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Movitec Driving School API running on port ${PORT}`));
+if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+  app.listen(PORT, () => console.log(`Movitec Driving School API running on port ${PORT}`));
+}
+
+module.exports = app;git 
