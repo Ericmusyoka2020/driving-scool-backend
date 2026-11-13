@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Movitec Driving School — Student Portal (Cravers, Thika)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex flex-col justify-between">
+
+  <div>
+    <!-- Navbar -->
+    <nav class="bg-slate-900 text-white px-4 sm:px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-3 shadow-md">
+      <div class="flex items-center gap-2">
+        <span class="bg-amber-500 text-slate-900 font-extrabold px-2.5 py-1 rounded text-xs sm:text-sm">MOVITEC</span>
+        <div>
+          <h1 class="font-bold text-sm sm:text-lg leading-tight">Movitec Driving School</h1>
+          <p class="text-[10px] sm:text-[11px] text-slate-400">Cravers, Thika • Student Portal</p>
+        </div>
+      </div>
+      <div id="loggedUserBox" class="hidden text-sm flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto border-t sm:border-t-0 pt-2 sm:pt-0 border-slate-800">
+        <span id="studentNameDisplay" class="font-semibold text-amber-400 text-xs sm:text-sm truncate max-w-[200px]"></span>
+        <button onclick="logout()" class="text-xs bg-slate-800 border border-slate-700 px-3 py-1.5 rounded hover:bg-slate-700">Logout</button>
+      </div>
+    </nav>
+
+    <main class="max-w-5xl mx-auto p-4 sm:p-6 space-y-6">
+
+      <!-- LOGIN / ACTIVATION -->
+      <div id="loginCard" class="bg-white p-6 sm:p-8 rounded-xl shadow-sm border border-slate-200 max-w-md mx-auto mt-8 sm:mt-12">
+        <div id="loginStep1">
+          <div class="text-center mb-5">
+            <span class="bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1 rounded-full">CRAVERS, THIKA</span>
+            <h2 class="text-lg sm:text-xl font-bold mt-2">Movitec Student Login</h2>
+          </div>
+          <form onsubmit="handleLoginSubmit(event)" class="space-y-4">
+            <input required id="loginPhone" placeholder="Phone Number (e.g. 0712345678)" class="w-full border rounded-lg px-4 py-2.5 text-sm" />
+            <input required id="loginPassword" type="password" placeholder="Password" class="w-full border rounded-lg px-4 py-2.5 text-sm" />
+            <button type="submit" class="w-full bg-slate-900 text-white font-semibold py-3 rounded-lg text-sm">Log In</button>
+          </form>
+          <div class="mt-6 pt-4 border-t text-center">
+            <button onclick="switchView('verify')" class="text-xs text-amber-600 font-bold hover:underline">Activate Account using ID & Phone →</button>
+          </div>
+        </div>
+
+        <div id="loginStepVerify" class="hidden">
+          <h2 class="text-lg font-bold mb-2 text-center">Account Activation</h2>
+          <form onsubmit="verifyIdentity(event)" class="space-y-4">
+            <input required id="verifyIdNumber" placeholder="National ID" class="w-full border rounded-lg px-4 py-2.5 text-sm" />
+            <input required id="verifyPhone" placeholder="Phone Number" class="w-full border rounded-lg px-4 py-2.5 text-sm" />
+            <button type="submit" class="w-full bg-amber-500 text-slate-900 font-bold py-3 rounded-lg text-sm">Verify ID</button>
+          </form>
+          <button onclick="switchView('login')" class="w-full mt-3 text-xs text-slate-500 hover:underline">← Back to Login</button>
+        </div>
+
+        <div id="loginStepPassword" class="hidden">
+          <h2 class="text-lg font-bold mb-2 text-center">Create Password</h2>
+          <form onsubmit="savePassword(event)" class="space-y-4">
+            <input required id="newPassword" type="password" placeholder="New Password (min 4 chars)" class="w-full border rounded-lg px-4 py-2.5 text-sm" />
+            <button type="submit" class="w-full bg-emerald-600 text-white font-semibold py-3 rounded-lg text-sm">Save Password</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- STUDENT DASHBOARD -->
+      <div id="studentDashboard" class="hidden space-y-6">
+
+        <div id="finishedClassesBanner" class="hidden bg-emerald-600 text-white p-4 rounded-xl shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div>
+            <p class="font-extrabold text-sm sm:text-base">🎓 Congratulations! Finished Classes</p>
+            <p class="text-xs text-emerald-100">Use the "Book Upcoming Exam" box below to request your exam slot.</p>
+          </div>
+          <span class="bg-white text-emerald-800 text-xs font-extrabold px-3 py-1 rounded-full">COMPLETED</span>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          <div class="bg-white p-4 sm:p-5 rounded-xl border border-slate-200 shadow-sm"><p class="text-[11px] sm:text-xs text-slate-500 uppercase font-semibold">Remaining Classes</p><p class="text-xl sm:text-2xl font-extrabold text-amber-600 mt-1" id="stRemainingLessons">0 / 24</p></div>
+          <div class="bg-white p-4 sm:p-5 rounded-xl border border-slate-200 shadow-sm"><p class="text-[11px] sm:text-xs text-slate-500 uppercase font-semibold">Course Fee</p><p class="text-xl sm:text-2xl font-bold mt-1" id="stTotalFee">KES 0</p></div>
+          <div class="bg-white p-4 sm:p-5 rounded-xl border border-slate-200 shadow-sm"><p class="text-[11px] sm:text-xs text-slate-500 uppercase font-semibold">Approved Paid</p><p class="text-xl sm:text-2xl font-bold text-emerald-600 mt-1" id="stTotalPaid">KES 0</p></div>
+          <div class="bg-white p-4 sm:p-5 rounded-xl border border-slate-200 shadow-sm"><p class="text-[11px] sm:text-xs text-slate-500 uppercase font-semibold">Balance</p><p class="text-xl sm:text-2xl font-bold text-rose-600 mt-1" id="stBalance">KES 0</p></div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
+          <div id="bookClassCard" class="bg-white p-4 sm:p-5 rounded-xl border border-slate-200 shadow-sm">
+            <h3 class="font-bold text-base mb-1">Schedule Driving Class</h3>
+            <form onsubmit="bookLesson(event)" class="space-y-3 text-sm mt-3">
+              <select required id="bookType" class="w-full border rounded-lg px-3 py-2 bg-white"><option value="practical">Practical Lesson</option><option value="theory">Theory Class</option></select>
+              <input required id="bookDateTime" type="datetime-local" class="w-full border rounded-lg px-3 py-2" />
+              <button type="submit" class="w-full bg-amber-500 font-bold py-2.5 rounded-lg">Request Class Slot</button>
+            </form>
+          </div>
+
+          <div id="bookExamCard" class="hidden bg-white p-4 sm:p-5 rounded-xl border-2 border-indigo-400 shadow-sm">
+            <h3 class="font-bold text-base text-indigo-950 mb-1">🎓 Book Upcoming Exam</h3>
+            <form onsubmit="bookExam(event)" class="space-y-3 text-sm mt-3">
+              <input required id="examPrefDate" type="date" class="w-full border rounded-lg px-3 py-2" />
+              <input id="examNotes" placeholder="Notes (optional)" class="w-full border rounded-lg px-3 py-2" />
+              <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-2.5 rounded-lg">Submit Exam Request</button>
+            </form>
+          </div>
+
+          <div id="submitPaymentCard" class="bg-white p-4 sm:p-5 rounded-xl border border-slate-200 shadow-sm">
+            <h3 class="font-bold text-base mb-1">Submit Fee Payment</h3>
+            <form onsubmit="submitFeePayment(event)" class="space-y-3 text-sm mt-3">
+              <input required id="subPayAmount" type="number" placeholder="Amount (KES)" class="w-full border rounded-lg px-3 py-2 font-semibold" />
+              <div class="grid grid-cols-2 gap-2">
+                <select required id="subPayMethod" class="w-full border rounded-lg px-3 py-2 bg-white"><option value="mpesa_manual">M-Pesa</option><option value="bank_transfer">Bank</option><option value="cash">Cash</option></select>
+                <input required id="subPayRef" placeholder="Code / Ref" class="w-full border rounded-lg px-3 py-2" />
+              </div>
+              <button type="submit" class="w-full bg-emerald-600 text-white font-semibold py-2.5 rounded-lg">Submit Payment</button>
+            </form>
+          </div>
+
+          <div id="paymentClearedCard" class="hidden bg-emerald-50 p-5 rounded-xl border-2 border-emerald-400 shadow-sm flex flex-col justify-center items-center text-center">
+            <div class="w-12 h-12 bg-emerald-600 text-white rounded-full flex items-center justify-center text-2xl font-bold mb-3">✓</div>
+            <h3 class="font-extrabold text-lg text-emerald-900">Congratulations! You have cleared your payment</h3>
+            <p class="text-xs text-emerald-700 mt-1">Your total course fee is 100% settled.</p>
+          </div>
+        </div>
+
+        <!-- STUDENT REQUEST HISTORY REFERENCE PANEL -->
+        <div class="bg-white p-4 sm:p-5 rounded-xl border border-slate-200 shadow-sm space-y-3">
+          <h3 class="font-bold text-base">My Request History Reference (Classes, Payments & Exams)</h3>
+          <div id="studentRequestHistoryList" class="space-y-2.5 text-xs max-h-72 overflow-y-auto"></div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
+          <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col h-[400px]">
+            <div class="bg-[#075E54] text-white px-4 py-3"><h3 class="font-bold text-sm">Movitec Admin Chat</h3><p class="text-[11px] text-emerald-100">Live Support</p></div>
+            <div id="studentChatHistory" class="flex-1 p-3 bg-[#efeae2] overflow-y-auto space-y-2 text-sm"></div>
+            <form onsubmit="sendStudentMessage(event)" class="bg-[#f0f2f5] p-2.5 flex gap-2 border-t">
+              <input required id="studentMsgInput" placeholder="Type message..." class="flex-1 bg-white rounded-full px-4 py-2 text-sm focus:outline-none shadow-sm" />
+              <button type="submit" class="bg-[#00a884] text-white font-bold px-4 py-2 rounded-full text-sm">Send</button>
+            </form>
+          </div>
+
+          <div class="bg-white p-4 sm:p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col h-[400px]">
+            <h3 class="font-bold text-base mb-3">System Inbox</h3>
+            <div id="studentNotifications" class="space-y-3 flex-1 overflow-y-auto"></div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Footer -->
+  <footer class="text-center py-6 text-xs text-slate-500 border-t mt-12 bg-white">
+    Powered by StackcraftsStudio
+  </footer>
+
+  <script>
+    const API_BASE = 'http://localhost:5000';
+    let currentStudent = null, currentEnrollment = null, temporaryStudentId = null, studentChatPoll = null;
+
+    function switchView(view) {
+      document.getElementById('loginStep1').classList.toggle('hidden', view !== 'login');
+      document.getElementById('loginStepVerify').classList.toggle('hidden', view !== 'verify');
+      document.getElementById('loginStepPassword').classList.toggle('hidden', view !== 'password');
+    }
+
+    async function handleLoginSubmit(e) {
+      e.preventDefault();
+      const res = await fetch(`${API_BASE}/api/students/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: document.getElementById('loginPhone').value, password: document.getElementById('loginPassword').value })
+      }).then(r => r.json());
+      if (!res.success) { if (res.needs_activation) switchView('verify'); return alert(res.error); }
+      currentStudent = res.student;
+      showDashboard();
+    }
+
+    async function verifyIdentity(e) {
+      e.preventDefault();
+      const res = await fetch(`${API_BASE}/api/students/verify-identity`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id_number: document.getElementById('verifyIdNumber').value, phone: document.getElementById('verifyPhone').value })
+      }).then(r => r.json());
+      if (!res.success) return alert(res.error);
+      temporaryStudentId = res.student_id;
+      switchView('password');
+    }
+
+    async function savePassword(e) {
+      e.preventDefault();
+      await fetch(`${API_BASE}/api/students/set-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ student_id: temporaryStudentId, password: document.getElementById('newPassword').value })
+      });
+      alert('Password saved! Please log in.');
+      switchView('login');
+    }
+
+    async function showDashboard() {
+      document.getElementById('loginCard').classList.add('hidden');
+      document.getElementById('studentDashboard').classList.remove('hidden');
+      document.getElementById('loggedUserBox').classList.remove('hidden');
+      document.getElementById('studentNameDisplay').textContent = `${currentStudent.full_name} (${currentStudent.phone})`;
+
+      await Promise.all([loadStudentFees(), loadStudentRequestHistory(), loadStudentMessages(), loadStudentNotifications()]);
+
+      if (studentChatPoll) clearInterval(studentChatPoll);
+      studentChatPoll = setInterval(() => {
+        if (currentStudent) {
+          loadStudentFees();
+          loadStudentRequestHistory();
+          loadStudentMessages();
+          loadStudentNotifications();
+        }
+      }, 4000);
+    }
+
+    async function loadStudentFees() {
+      const res = await fetch(`${API_BASE}/api/students/${currentStudent.id}/fees`).then(r => r.json());
+      if (!res.enrollment) return;
+      currentEnrollment = res.enrollment;
+
+      const isFinished = res.enrollment.status === 'completed';
+      const balance = Number(res.enrollment.agreed_fee) - Number(res.enrollment.amount_paid);
+      const isCleared = balance <= 0;
+
+      document.getElementById('finishedClassesBanner').classList.toggle('hidden', !isFinished);
+      document.getElementById('bookClassCard').classList.toggle('hidden', isFinished);
+      document.getElementById('bookExamCard').classList.toggle('hidden', !isFinished);
+
+      document.getElementById('submitPaymentCard').classList.toggle('hidden', isCleared);
+      document.getElementById('paymentClearedCard').classList.toggle('hidden', !isCleared);
+
+      document.getElementById('stRemainingLessons').textContent = isFinished ? 'COMPLETED' : `${res.enrollment.remaining_lessons} / ${res.enrollment.total_lessons}`;
+      document.getElementById('stTotalFee').textContent = `KES ${res.enrollment.agreed_fee}`;
+      document.getElementById('stTotalPaid').textContent = `KES ${res.enrollment.amount_paid}`;
+
+      const balEl = document.getElementById('stBalance');
+      balEl.textContent = `KES ${Math.max(0, balance)}`;
+      balEl.classList.toggle('text-rose-600', !isCleared);
+      balEl.classList.toggle('text-emerald-600', isCleared);
+    }
+
+    async function loadStudentRequestHistory() {
+      const [lessons, payments, exams] = await Promise.all([
+        fetch(`${API_BASE}/api/lessons?student_id=${currentStudent.id}`).then(r => r.json()),
+        fetch(`${API_BASE}/api/payments?student_id=${currentStudent.id}`).then(r => r.json()),
+        fetch(`${API_BASE}/api/exams?student_id=${currentStudent.id}`).then(r => r.json())
+      ]);
+
+      let html = '';
+
+      (lessons || []).forEach(l => {
+        html += `<div class="p-3 rounded-lg border bg-slate-50 flex justify-between items-center gap-2">
+          <div>
+            <p class="font-bold capitalize">Class Booking: ${l.lesson_type}</p>
+            <p class="text-[11px] text-slate-600">Date: ${new Date(l.scheduled_at).toLocaleString()}</p>
+            ${l.status === 'rejected' ? `<p class="text-[11px] text-rose-600 font-semibold mt-0.5">Reason: ${l.rejection_reason || 'None'}</p>` : ''}
+            ${l.instructor_remarks ? `<p class="text-[11px] text-emerald-700 font-semibold mt-0.5">Instructor Remarks: ${l.instructor_remarks}</p>` : ''}
+          </div>
+          <span class="text-[10px] px-2.5 py-1 rounded font-bold uppercase ${l.status === 'approved' || l.status === 'completed' ? 'bg-emerald-100 text-emerald-800' : l.status === 'rejected' ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800'}">${l.status}</span>
+        </div>`;
+      });
+
+      (payments || []).forEach(p => {
+        html += `<div class="p-3 rounded-lg border bg-slate-50 flex justify-between items-center gap-2">
+          <div>
+            <p class="font-bold">Payment: KES ${p.amount} (${p.payment_method})</p>
+            <p class="text-[11px] text-slate-600">Ref: ${p.reference_code || 'N/A'}</p>
+            ${p.status === 'rejected' ? `<p class="text-[11px] text-rose-600 font-semibold mt-0.5">Reason: ${p.rejection_reason || 'None'}</p>` : ''}
+          </div>
+          <span class="text-[10px] px-2.5 py-1 rounded font-bold uppercase ${p.status === 'approved' ? 'bg-emerald-100 text-emerald-800' : p.status === 'rejected' ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800'}">${p.status}</span>
+        </div>`;
+      });
+
+      (exams || []).forEach(ex => {
+        html += `<div class="p-3 rounded-lg border bg-indigo-50/40 border-indigo-200 flex justify-between items-center gap-2">
+          <div>
+            <p class="font-bold">Exam Request (Preferred: ${ex.preferred_date})</p>
+            ${ex.status === 'approved' && ex.exam_datetime ? `<p class="text-[11px] text-emerald-800 font-extrabold mt-0.5">✓ OFFICIAL EXAM TIME: ${new Date(ex.exam_datetime).toLocaleString()}</p>` : ''}
+            ${ex.status === 'rejected' ? `<p class="text-[11px] text-rose-600 font-semibold mt-0.5">Reason: ${ex.rejection_reason || 'None'}</p>` : ''}
+          </div>
+          <span class="text-[10px] px-2.5 py-1 rounded font-bold uppercase ${ex.status === 'approved' ? 'bg-emerald-100 text-emerald-800' : ex.status === 'rejected' ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800'}">${ex.status}</span>
+        </div>`;
+      });
+
+      document.getElementById('studentRequestHistoryList').innerHTML = html || '<p class="text-slate-400">No requests submitted yet.</p>';
+    }
+
+    async function bookLesson(e) {
+      e.preventDefault();
+      await fetch(`${API_BASE}/api/lessons`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ student_id: currentStudent.id, lesson_type: document.getElementById('bookType').value, scheduled_at: new Date(document.getElementById('bookDateTime').value).toISOString() })
+      });
+      e.target.reset();
+      alert('Class requested!');
+      await loadStudentRequestHistory();
+    }
+
+    async function bookExam(e) {
+      e.preventDefault();
+      await fetch(`${API_BASE}/api/exams`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ student_id: currentStudent.id, preferred_date: document.getElementById('examPrefDate').value, notes: document.getElementById('examNotes').value })
+      });
+      e.target.reset();
+      alert('Exam request submitted to Admin!');
+      await loadStudentRequestHistory();
+    }
+
+    async function submitFeePayment(e) {
+      e.preventDefault();
+      await fetch(`${API_BASE}/api/payments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ enrollment_id: currentEnrollment.id, student_id: currentStudent.id, amount: Number(document.getElementById('subPayAmount').value), payment_method: document.getElementById('subPayMethod').value, reference_code: document.getElementById('subPayRef').value, status: 'pending' })
+      });
+      e.target.reset();
+      alert('Payment submitted for approval!');
+      await Promise.all([loadStudentFees(), loadStudentRequestHistory()]);
+    }
+
+    async function loadStudentMessages() {
+      const container = document.getElementById('studentChatHistory');
+      const msgs = await fetch(`${API_BASE}/api/messages?student_id=${currentStudent.id}`).then(r => r.json());
+      if (!Array.isArray(msgs)) return;
+      container.innerHTML = msgs.map(m => {
+        const isMe = m.sender_role === 'student';
+        return `
+          <div class="flex ${isMe ? 'justify-end' : 'justify-start'}">
+            <div class="max-w-[85%] sm:max-w-[80%] px-3 py-2 rounded-lg shadow-sm ${isMe ? 'bg-[#d9fdd3]' : 'bg-white'}">
+              <p class="text-[10px] font-bold ${isMe ? 'text-emerald-800' : 'text-amber-700'}">${isMe ? 'You' : m.sender_name}</p>
+              <p class="text-xs whitespace-pre-wrap">${m.message}</p>
+              <p class="text-[9px] text-slate-400 text-right mt-1">${new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+            </div>
+          </div>
+        `;
+      }).join('') || '<div class="h-full flex items-center justify-center"><span class="text-xs text-slate-400">Say hello to Admin!</span></div>';
+      container.scrollTop = container.scrollHeight;
+    }
+
+    async function sendStudentMessage(e) {
+      e.preventDefault();
+      const input = document.getElementById('studentMsgInput');
+      const msg = input.value;
+      input.value = '';
+      await fetch(`${API_BASE}/api/messages`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ student_id: currentStudent.id, sender_role: 'student', sender_name: currentStudent.full_name, message: msg })
+      });
+      await loadStudentMessages();
+    }
+
+    async function loadStudentNotifications() {
+      const list = await fetch(`${API_BASE}/api/notifications/${currentStudent.id}`).then(r => r.json());
+      document.getElementById('studentNotifications').innerHTML = (list || []).map(n => `
+        <div class="p-3 rounded-lg border bg-amber-50/60 border-amber-300">
+          <p class="font-bold text-sm">${n.title}</p>
+          <p class="text-xs text-slate-600 mt-0.5">${n.message}</p>
+        </div>
+      `).join('') || '<p class="text-slate-400 text-sm">No notifications.</p>';
+    }
+
+    function logout() {
+      if (studentChatPoll) clearInterval(studentChatPoll);
+      location.reload();
+    }
+  </script>
+</body>
+</html>
