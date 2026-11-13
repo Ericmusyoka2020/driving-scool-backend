@@ -30,7 +30,7 @@
         <span class="bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1 rounded-full">CRAVERS, THIKA</span>
         <h2 class="text-lg sm:text-xl font-bold mt-3">Movitec Admin Login</h2>
       </div>
-      <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+      <form onsubmit="handleFormSubmit(event, handleAdminLogin)" class="space-y-4">
         <div>
           <label class="block text-xs font-semibold text-slate-600 mb-1">Admin Username</label>
           <input required id="adminUser" placeholder="e.g. admin1" class="w-full border rounded-lg px-4 py-2.5 text-sm" />
@@ -39,7 +39,7 @@
           <label class="block text-xs font-semibold text-slate-600 mb-1">Password</label>
           <input required id="adminPass" type="password" placeholder="••••••••" class="w-full border rounded-lg px-4 py-2.5 text-sm" />
         </div>
-        <button type="submit" class="w-full bg-slate-900 text-white font-bold py-3 rounded-lg text-sm">Access Dashboard</button>
+        <button type="submit" class="w-full bg-slate-900 text-white font-bold py-3 rounded-lg text-sm transition">Access Dashboard</button>
       </form>
     </div>
 
@@ -50,7 +50,7 @@
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
         <div class="bg-white p-4 sm:p-5 rounded-xl shadow-sm border border-slate-200">
           <h3 class="font-bold text-sm mb-3 border-b pb-2">1. Enroll Student</h3>
-          <form onsubmit="registerStudent(event)" class="space-y-2.5 text-xs">
+          <form onsubmit="handleFormSubmit(event, registerStudent)" class="space-y-2.5 text-xs">
             <input required id="stName" placeholder="Full Name" class="w-full border rounded-lg px-3 py-2" />
             <input required id="stEmail" type="email" placeholder="Email" class="w-full border rounded-lg px-3 py-2" />
             <div class="grid grid-cols-2 gap-2">
@@ -87,7 +87,7 @@
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6">
         <div class="bg-white p-4 sm:p-5 rounded-xl shadow-sm border border-slate-200">
           <h3 class="font-bold text-base mb-1">5. Send Announcement</h3>
-          <form onsubmit="sendAnnouncement(event)" class="space-y-3 text-sm mt-3">
+          <form onsubmit="handleFormSubmit(event, sendAnnouncement)" class="space-y-3 text-sm mt-3">
             <select id="annTarget" onchange="toggleStudentChecklist()" class="w-full border rounded-lg px-3 py-2 bg-white font-semibold">
               <option value="ALL">📢 All Enrolled Students</option>
               <option value="SOME">☑️ Select Specific Students</option>
@@ -113,7 +113,7 @@
               <div id="activeChatHistory" class="flex-1 p-3 overflow-y-auto space-y-2 text-sm">
                 <div class="h-full flex items-center justify-center"><span class="text-xs bg-white/90 px-3 py-1 rounded">Select a student</span></div>
               </div>
-              <form id="adminReplyForm" onsubmit="sendAdminReply(event)" class="hidden bg-[#f0f2f5] p-2.5 flex gap-2 border-t">
+              <form id="adminReplyForm" onsubmit="handleFormSubmit(event, sendAdminReply)" class="hidden bg-[#f0f2f5] p-2.5 flex gap-2 border-t">
                 <input required id="adminReplyInput" placeholder="Type message..." class="flex-1 bg-white rounded-full px-4 py-2 text-sm focus:outline-none shadow-sm" />
                 <button type="submit" class="bg-[#00a884] text-white font-bold px-4 py-2 rounded-full text-sm">Send</button>
               </form>
@@ -166,14 +166,14 @@
 
   <!-- Footer -->
   <footer class="text-center py-6 text-xs text-slate-500 border-t mt-12 bg-white">
-    Powered by StackcraftsStudio
+    Powered by <a href="https://stackcrafts.com" target="_blank" class="underline font-semibold hover:text-slate-700">stackcraftsstudio</a> • All rights reserved.
   </footer>
 
   <!-- REJECTION REASON MODAL -->
   <div id="rejectModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
     <div class="bg-white p-6 rounded-xl max-w-sm w-full space-y-4 shadow-xl">
       <h3 class="font-bold text-base text-rose-700 border-b pb-2" id="rejectModalTitle">Reject Request</h3>
-      <form onsubmit="confirmRejectAction(event)" class="space-y-3 text-xs">
+      <form onsubmit="handleFormSubmit(event, confirmRejectAction)" class="space-y-3 text-xs">
         <input type="hidden" id="rejectItemType" />
         <input type="hidden" id="rejectItemId" />
         <div>
@@ -192,7 +192,7 @@
   <div id="remarksModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
     <div class="bg-white p-6 rounded-xl max-w-sm w-full space-y-4 shadow-xl">
       <h3 class="font-bold text-base text-emerald-800 border-b pb-2">Complete Class & Instructor Remarks</h3>
-      <form onsubmit="confirmLessonRemarks(event)" class="space-y-3 text-xs">
+      <form onsubmit="handleFormSubmit(event, confirmLessonRemarks)" class="space-y-3 text-xs">
         <input type="hidden" id="remarksLessonId" />
         <div>
           <label class="font-semibold text-slate-700">Instructor Comments / Progress Notes</label>
@@ -210,7 +210,7 @@
   <div id="editStudentModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
     <div class="bg-white p-6 rounded-xl max-w-md w-full space-y-4 shadow-xl">
       <h3 class="font-bold text-lg border-b pb-2">Edit Student Account, Fees & Quota</h3>
-      <form onsubmit="saveEditedStudent(event)" class="space-y-3 text-xs">
+      <form onsubmit="handleFormSubmit(event, saveEditedStudent)" class="space-y-3 text-xs">
         <input type="hidden" id="editEnrollmentId" />
         <div>
           <label class="font-semibold text-slate-600">Full Name</label>
@@ -265,8 +265,36 @@
     let selectedChatStudentId = null;
     let chatPollInterval = null;
 
-    async function handleAdminLogin(e) {
+    // Helper wrapper to handle double-click protection ("Processing..." & Hide)
+    async function handleFormSubmit(e, callback) {
       e.preventDefault();
+      const submitBtn = e.target.querySelector('button[type="submit"]') || e.submitter;
+      
+      let originalText = '';
+      if (submitBtn) {
+        originalText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = 'Processing...';
+      }
+
+      try {
+        await callback(e);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        if (submitBtn) {
+          // Hide button and reset state smoothly
+          submitBtn.classList.add('hidden');
+          setTimeout(() => {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+            submitBtn.classList.remove('hidden');
+          }, 1500);
+        }
+      }
+    }
+
+    async function handleAdminLogin(e) {
       const res = await fetch(`${API_BASE}/api/admin/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -357,7 +385,7 @@
           <p class="font-bold">${l.student?.full_name} (${l.student?.phone})</p>
           <p class="text-[11px] capitalize">${l.lesson_type} • ${new Date(l.scheduled_at).toLocaleString()}</p>
           <div class="flex gap-1.5">
-            <button onclick="approveLesson('${l.id}')" class="flex-1 bg-emerald-600 text-white py-1 rounded font-bold">Approve</button>
+            <button onclick="approveLesson(this, '${l.id}')" class="flex-1 bg-emerald-600 text-white py-1 rounded font-bold transition">Approve</button>
             <button onclick="openRejectModal('lesson', '${l.id}', 'Reject Class Request')" class="bg-rose-600 text-white px-2.5 py-1 rounded font-bold">Reject</button>
           </div>
         </div>
@@ -384,7 +412,7 @@
           <p class="font-bold">${p.student?.full_name} — KES ${p.amount}</p>
           <p class="text-[11px] uppercase">${p.payment_method} • Ref: <b>${p.reference_code || 'N/A'}</b></p>
           <div class="flex gap-1.5">
-            <button onclick="approvePayment('${p.id}')" class="flex-1 bg-emerald-600 text-white py-1 rounded font-bold">Approve</button>
+            <button onclick="approvePayment(this, '${p.id}')" class="flex-1 bg-emerald-600 text-white py-1 rounded font-bold transition">Approve</button>
             <button onclick="openRejectModal('payment', '${p.id}', 'Reject Payment Submission')" class="bg-rose-600 text-white px-2.5 py-1 rounded font-bold">Reject</button>
           </div>
         </div>
@@ -397,7 +425,7 @@
           <p class="text-[11px]">Preferred Date: <b>${ex.preferred_date}</b></p>
           <input type="datetime-local" id="examTime_${ex.id}" class="w-full border rounded px-2 py-1.5 text-[11px] bg-white" />
           <div class="flex gap-1.5">
-            <button onclick="approveExam('${ex.id}')" class="flex-1 bg-indigo-600 text-white py-1.5 rounded font-bold">Approve & Time</button>
+            <button onclick="approveExam(this, '${ex.id}')" class="flex-1 bg-indigo-600 text-white py-1.5 rounded font-bold transition">Approve & Time</button>
             <button onclick="openRejectModal('exam', '${ex.id}', 'Reject Exam Request')" class="bg-rose-600 text-white px-2.5 py-1.5 rounded font-bold">Reject</button>
           </div>
         </div>
@@ -446,7 +474,6 @@
       document.getElementById('adminEnrollmentsTable').innerHTML = list.map(e => {
         const isFinished = e.status === 'completed';
         const balance = Number(e.agreed_fee) - Number(e.amount_paid);
-        // Button ONLY appears when remaining_lessons === 0 AND fee balance <= 0
         const readyToFinish = !isFinished && Number(e.remaining_lessons) === 0 && balance <= 0;
 
         return `
@@ -460,7 +487,7 @@
               ${isFinished 
                 ? '<span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1.5 rounded-full">✓ FINISHED</span>' 
                 : (readyToFinish 
-                    ? `<button onclick="markFinishedClasses('${e.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-2.5 py-1.5 rounded animate-pulse">Mark Finished</button>` 
+                    ? `<button onclick="markFinishedClasses(this, '${e.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-2.5 py-1.5 rounded animate-pulse transition">Mark Finished</button>` 
                     : '')}
             </td>
           </tr>
@@ -468,13 +495,26 @@
       }).join('') || '<tr><td colspan="5" class="text-center py-4 text-slate-400 text-xs">No students found.</td></tr>';
     }
 
-    async function markFinishedClasses(id) {
+    async function markFinishedClasses(btn, id) {
       const confirmed = confirm("This change will guarantee finishing of school and changes are irreversible. Proceed?");
       if (!confirmed) return;
       
-      const res = await fetch(`${API_BASE}/api/enrollments/${id}/complete`, { method: 'PATCH' }).then(r => r.json());
-      if (!res.success) return alert(res.error || 'Failed to complete student.');
-      await loadAdminData();
+      const originalText = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = 'Processing...';
+
+      try {
+        const res = await fetch(`${API_BASE}/api/enrollments/${id}/complete`, { method: 'PATCH' }).then(r => r.json());
+        if (!res.success) return alert(res.error || 'Failed to complete student.');
+        await loadAdminData();
+      } finally {
+        btn.classList.add('hidden');
+        setTimeout(() => {
+          btn.disabled = false;
+          btn.innerHTML = originalText;
+          btn.classList.remove('hidden');
+        }, 1500);
+      }
     }
 
     // REJECTION MODAL LOGIC
@@ -492,7 +532,6 @@
     }
 
     async function confirmRejectAction(e) {
-      e.preventDefault();
       const type = document.getElementById('rejectItemType').value;
       const id = document.getElementById('rejectItemId').value;
       const reason = document.getElementById('rejectReasonInput').value.trim();
@@ -526,7 +565,6 @@
     }
 
     async function confirmLessonRemarks(e) {
-      e.preventDefault();
       const id = document.getElementById('remarksLessonId').value;
       const remarks = document.getElementById('remarksInput').value.trim();
 
@@ -569,7 +607,6 @@
     }
 
     async function saveEditedStudent(e) {
-      e.preventDefault();
       const id = document.getElementById('editEnrollmentId').value;
       const payload = {
         full_name: document.getElementById('editName').value,
@@ -645,7 +682,6 @@
     }
 
     async function sendAdminReply(e) {
-      e.preventDefault();
       if (!selectedChatStudentId) return;
       const input = document.getElementById('adminReplyInput');
       const msg = input.value;
@@ -659,7 +695,6 @@
     }
 
     async function sendAnnouncement(e) {
-      e.preventDefault();
       const target = document.getElementById('annTarget').value;
       const student_ids = target === 'SOME' ? Array.from(document.querySelectorAll('input[name="annStudentIds"]:checked')).map(cb => cb.value) : [];
       await fetch(`${API_BASE}/api/announcements`, {
@@ -672,20 +707,33 @@
       await refreshMessagesOnly();
     }
 
-    async function approveExam(id) {
+    async function approveExam(btn, id) {
       const dt = document.getElementById(`examTime_${id}`).value;
       if (!dt) return alert('Select exam date & time.');
-      const res = await fetch(`${API_BASE}/api/exams/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'approved', exam_datetime: new Date(dt).toISOString() })
-      }).then(r => r.json());
-      if (!res.success) return alert(res.error);
-      await loadAdminData();
+
+      const originalText = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = 'Processing...';
+
+      try {
+        const res = await fetch(`${API_BASE}/api/exams/${id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: 'approved', exam_datetime: new Date(dt).toISOString() })
+        }).then(r => r.json());
+        if (!res.success) return alert(res.error);
+        await loadAdminData();
+      } finally {
+        btn.classList.add('hidden');
+        setTimeout(() => {
+          btn.disabled = false;
+          btn.innerHTML = originalText;
+          btn.classList.remove('hidden');
+        }, 1500);
+      }
     }
 
     async function registerStudent(e) {
-      e.preventDefault();
       const res = await fetch(`${API_BASE}/api/students`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -702,16 +750,42 @@
       alert('Student registered!');
     }
 
-    async function approveLesson(id) {
-      const res = await fetch(`${API_BASE}/api/lessons/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'approved' }) }).then(r => r.json());
-      if (!res.success) return alert(res.error);
-      await loadAdminData();
+    async function approveLesson(btn, id) {
+      const originalText = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = 'Processing...';
+
+      try {
+        const res = await fetch(`${API_BASE}/api/lessons/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'approved' }) }).then(r => r.json());
+        if (!res.success) return alert(res.error);
+        await loadAdminData();
+      } finally {
+        btn.classList.add('hidden');
+        setTimeout(() => {
+          btn.disabled = false;
+          btn.innerHTML = originalText;
+          btn.classList.remove('hidden');
+        }, 1500);
+      }
     }
 
-    async function approvePayment(id) {
-      const res = await fetch(`${API_BASE}/api/payments/${id}/approve`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'approved' }) }).then(r => r.json());
-      if (!res.success) return alert(res.error);
-      await loadAdminData();
+    async function approvePayment(btn, id) {
+      const originalText = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = 'Processing...';
+
+      try {
+        const res = await fetch(`${API_BASE}/api/payments/${id}/approve`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'approved' }) }).then(r => r.json());
+        if (!res.success) return alert(res.error);
+        await loadAdminData();
+      } finally {
+        btn.classList.add('hidden');
+        setTimeout(() => {
+          btn.disabled = false;
+          btn.innerHTML = originalText;
+          btn.classList.remove('hidden');
+        }, 1500);
+      }
     }
 
     window.onload = () => {
