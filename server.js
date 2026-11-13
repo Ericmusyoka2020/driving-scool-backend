@@ -1,4 +1,4 @@
-require('dotenv').config();
+
 const express = require('express');
 const cors = require('cors');
 const { createClient } = require('@supabase/supabase-js');
@@ -8,7 +8,7 @@ app.use(cors());
 app.use(express.json());
 
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://tjpqqztfuvrxwgvjofoh.supabase.co';
-const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || 'sb_secret_mSIIekVNqGrEIyN3fRPllQ_BqE-LDD4';
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
 const ADMIN_ACCOUNTS = {
@@ -132,10 +132,9 @@ app.get('/api/enrollments', async (req, res) => {
   }
 });
 
-// Edit Student Profile, Fees, & Quota
 app.put('/api/enrollments/:id', async (req, res) => {
   try {
-    const { full_name, email, phone, id_number, pdl_number, agreed_fee, amount_paid, total_lessons, remaining_lessons } = req.body;
+    const { full_name, email, phone, id_number, pdl_number, agreed_fee, total_lessons, remaining_lessons } = req.body;
     const enrollmentId = req.params.id;
 
     const { data: enr, error: enrErr } = await supabase
@@ -151,14 +150,11 @@ app.put('/api/enrollments/:id', async (req, res) => {
     }).eq('id', enr.student_id);
     if (profErr) throw profErr;
 
-    const updates = {
+    const { error: updErr } = await supabase.from('enrollments').update({
       agreed_fee: Number(agreed_fee),
-      amount_paid: Number(amount_paid),
       total_lessons: Number(total_lessons),
       remaining_lessons: Number(remaining_lessons)
-    };
-
-    const { error: updErr } = await supabase.from('enrollments').update(updates).eq('id', enrollmentId);
+    }).eq('id', enrollmentId);
     if (updErr) throw updErr;
 
     res.json({ success: true });
@@ -416,10 +412,5 @@ app.patch('/api/notifications/:id/read', async (req, res) => {
   }
 });
 
-// Conditional listening for local development vs Render, export app for Vercel serverless
 const PORT = process.env.PORT || 5000;
-if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
-  app.listen(PORT, () => console.log(`Movitec Driving School API running on port ${PORT}`));
-}
-
-module.exports = app;
+app.listen(PORT, () => console.log(`Movitec Driving School API running on port ${PORT}`));
