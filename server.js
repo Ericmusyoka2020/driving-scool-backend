@@ -422,4 +422,4 @@ if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
   app.listen(PORT, () => console.log(`Movitec Driving School API running on port ${PORT}`));
 }
 
-module.exports = app;git 
+module.exports = app;
