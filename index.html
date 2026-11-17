@@ -1,333 +1,238 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Movitec Driving School — Admin Portal (Cravers, Thika)</title>
+  <title>Movitec Driving School — Central Admin Portal</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex flex-col justify-between">
-
   <div>
-    <!-- Navbar -->
-    <nav class="bg-slate-900 text-white px-4 sm:px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-3 shadow-md">
-      <div class="flex items-center gap-2">
-        <span class="bg-amber-500 text-slate-900 font-extrabold px-2.5 py-1 rounded text-xs sm:text-sm">ADMIN</span>
-        <div>
-          <h1 class="font-bold text-sm sm:text-lg leading-tight">Movitec Driving School</h1>
-          <p class="text-[10px] sm:text-[11px] text-slate-400">Cravers, Thika • Administration</p>
-        </div>
+    <nav class="bg-slate-900 text-white px-4 sm:px-6 py-4 flex justify-between items-center shadow-md">
+      <div>
+        <h1 class="font-bold text-sm sm:text-lg">Movitec Central Administration</h1>
+        <p class="text-[10px] sm:text-xs text-amber-400">Manage Branches, Financial Reports, Exam Rosters & Chats</p>
       </div>
-      <div id="adminUserBox" class="hidden flex items-center justify-between sm:justify-end gap-3 text-sm w-full sm:w-auto border-t sm:border-t-0 pt-2 sm:pt-0 border-slate-800">
-        <span id="adminNameBadge" class="text-amber-400 font-semibold text-xs sm:text-sm truncate"></span>
-        <button onclick="adminLogout()" class="text-xs bg-slate-800 border border-slate-700 px-3 py-1.5 rounded hover:bg-slate-700">Logout</button>
-      </div>
+      <button id="adminLogoutBtn" onclick="location.reload()" class="hidden text-xs bg-slate-800 px-3 py-1.5 rounded">Logout</button>
     </nav>
 
-    <!-- ADMIN LOGIN SCREEN -->
-    <div id="adminLoginScreen" class="max-w-md mx-auto mt-16 bg-white p-6 sm:p-8 rounded-xl shadow-sm border border-slate-200 m-4">
-      <div class="text-center mb-6">
-        <span class="bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1 rounded-full">CRAVERS, THIKA</span>
-        <h2 class="text-lg sm:text-xl font-bold mt-3">Movitec Admin Login</h2>
-      </div>
-      <form onsubmit="handleFormSubmit(event, handleAdminLogin)" class="space-y-4">
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 mb-1">Admin Username</label>
-          <input required id="adminUser" placeholder="e.g. admin1" class="w-full border rounded-lg px-4 py-2.5 text-sm" />
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 mb-1">Password</label>
-          <input required id="adminPass" type="password" placeholder="••••••••" class="w-full border rounded-lg px-4 py-2.5 text-sm" />
-        </div>
-        <button type="submit" class="w-full bg-slate-900 text-white font-bold py-3 rounded-lg text-sm transition">Access Dashboard</button>
+    <!-- ADMIN LOGIN -->
+    <div id="adminLoginScreen" class="max-w-md mx-auto mt-16 bg-white p-6 sm:p-8 rounded-xl shadow-sm border m-4">
+      <h2 class="text-xl font-bold mb-4 text-center">Admin Login</h2>
+      <form onsubmit="handleAdminLogin(event)" class="space-y-4 text-xs">
+        <div><label class="font-semibold">Username</label><input required id="adminUser" placeholder="admin1" class="w-full border rounded p-2.5 mt-1 text-sm" /></div>
+        <div><label class="font-semibold">Password</label><input required id="adminPass" type="password" class="w-full border rounded p-2.5 mt-1 text-sm" /></div>
+        <button type="submit" class="w-full bg-slate-900 text-white font-bold py-3 rounded-lg text-sm">Access Admin Panel</button>
       </form>
     </div>
 
-    <!-- ADMIN MAIN DASHBOARD -->
-    <main id="adminDashboard" class="hidden max-w-7xl mx-auto p-4 sm:p-6 space-y-6">
-
-      <!-- Top Grid: Enroll & Pending Requests -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-        <div class="bg-white p-4 sm:p-5 rounded-xl shadow-sm border border-slate-200">
-          <h3 class="font-bold text-sm mb-3 border-b pb-2">1. Enroll Student</h3>
-          <form onsubmit="handleFormSubmit(event, registerStudent)" class="space-y-2.5 text-xs">
-            <input required id="stName" placeholder="Full Name" class="w-full border rounded-lg px-3 py-2" />
-            <input required id="stEmail" type="email" placeholder="Email" class="w-full border rounded-lg px-3 py-2" />
-            <div class="grid grid-cols-2 gap-2">
-              <input required id="stPhone" placeholder="Phone (07...)" class="w-full border rounded-lg px-3 py-2" />
-              <input required id="stId" placeholder="National ID" class="w-full border rounded-lg px-3 py-2" />
-            </div>
-            <input id="stPdl" placeholder="PDL Number" class="w-full border rounded-lg px-3 py-2" />
-            <select required id="stCourse" onchange="autoFillCourse()" class="w-full border rounded-lg px-3 py-2 bg-white"></select>
-            <div class="grid grid-cols-2 gap-2">
-              <input required id="stFee" type="number" placeholder="Fee (KES)" class="w-full border rounded-lg px-3 py-1.5 font-semibold" />
-              <input required id="stLessons" type="number" value="24" class="w-full border rounded-lg px-3 py-1.5 font-semibold" />
-            </div>
-            <button type="submit" class="w-full bg-slate-900 text-white font-semibold py-2.5 rounded-lg">Register</button>
-          </form>
-        </div>
-
-        <div class="bg-white p-4 sm:p-5 rounded-xl shadow-sm border border-slate-200">
-          <h3 class="font-bold text-sm mb-3 border-b pb-2">2. Class Requests</h3>
-          <div id="pendingLessonsList" class="space-y-2.5 text-xs max-h-72 sm:max-h-80 overflow-y-auto"></div>
-        </div>
-
-        <div class="bg-white p-4 sm:p-5 rounded-xl shadow-sm border border-slate-200">
-          <h3 class="font-bold text-sm mb-3 border-b pb-2">3. Payment Submissions</h3>
-          <div id="pendingPaymentsList" class="space-y-2.5 text-xs max-h-72 sm:max-h-80 overflow-y-auto"></div>
-        </div>
-
-        <div class="bg-white p-4 sm:p-5 rounded-xl shadow-sm border border-slate-200">
-          <h3 class="font-bold text-sm mb-3 border-b pb-2">4. Exam Requests</h3>
-          <div id="pendingExamsList" class="space-y-2.5 text-xs max-h-72 sm:max-h-80 overflow-y-auto"></div>
-        </div>
-      </div>
-
-      <!-- Announcements & WhatsApp Live Chat -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6">
-        <div class="bg-white p-4 sm:p-5 rounded-xl shadow-sm border border-slate-200">
-          <h3 class="font-bold text-base mb-1">5. Send Announcement</h3>
-          <form onsubmit="handleFormSubmit(event, sendAnnouncement)" class="space-y-3 text-sm mt-3">
-            <select id="annTarget" onchange="toggleStudentChecklist()" class="w-full border rounded-lg px-3 py-2 bg-white font-semibold">
-              <option value="ALL">📢 All Enrolled Students</option>
-              <option value="SOME">☑️ Select Specific Students</option>
+    <!-- DASHBOARD -->
+    <main id="adminDashboard" class="hidden max-w-7xl mx-auto p-3 sm:p-6 space-y-6">
+      
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-white p-4 sm:p-5 rounded-xl border shadow-sm space-y-3">
+          <h3 class="font-bold text-sm sm:text-base">Branch Password Management</h3>
+          <form onsubmit="updateBranchPassword(event)" class="space-y-3 text-xs">
+            <select id="branchPassId" class="w-full border rounded p-2 bg-white font-semibold">
+              <option value="kiganjo">Kiganjo Branch</option>
+              <option value="thika_cravers">Thika Cravers Branch</option>
+              <option value="makongeni">Makongeni Branch</option>
+              <option value="kimbo">Kimbo Branch</option>
             </select>
-            <div id="annStudentChecklist" class="hidden border rounded-lg p-2.5 max-h-36 overflow-y-auto bg-slate-50 space-y-1.5 text-xs"></div>
-            <input required id="annTitle" placeholder="Title" class="w-full border rounded-lg px-3 py-2" />
-            <textarea required id="annMessage" rows="3" placeholder="Message..." class="w-full border rounded-lg px-3 py-2"></textarea>
-            <button type="submit" class="w-full bg-amber-500 font-bold py-2.5 rounded-lg">Broadcast</button>
+            <input required id="branchNewPass" placeholder="New Branch Password" class="w-full border rounded p-2" />
+            <button type="submit" class="w-full bg-amber-500 font-bold py-2 rounded">Update Branch Password</button>
           </form>
         </div>
 
-        <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
-          <div class="bg-[#075E54] text-white px-4 py-3 flex justify-between items-center">
-            <div>
-              <h3 class="font-bold text-sm">6. Student WhatsApp Live Chat</h3>
-              <p class="text-[11px] text-emerald-100" id="chatHeaderSub">Select a student</p>
-            </div>
-            <span class="text-[10px] bg-[#128C7E] px-2 py-0.5 rounded-full font-semibold">● Live Sync</span>
-          </div>
-          <div class="grid grid-cols-1 md:grid-cols-3 h-[420px]">
-            <div class="border-r border-slate-200 overflow-y-auto bg-white divide-y h-36 md:h-full" id="messageThreadsList"></div>
-            <div class="md:col-span-2 flex flex-col bg-[#efeae2] h-[calc(420px-9rem)] md:h-full">
-              <div id="activeChatHistory" class="flex-1 p-3 overflow-y-auto space-y-2 text-sm">
-                <div class="h-full flex items-center justify-center"><span class="text-xs bg-white/90 px-3 py-1 rounded">Select a student</span></div>
-              </div>
-              <form id="adminReplyForm" onsubmit="handleFormSubmit(event, sendAdminReply)" class="hidden bg-[#f0f2f5] p-2.5 flex gap-2 border-t">
-                <input required id="adminReplyInput" placeholder="Type message..." class="flex-1 bg-white rounded-full px-4 py-2 text-sm focus:outline-none shadow-sm" />
-                <button type="submit" class="bg-[#00a884] text-white font-bold px-4 py-2 rounded-full text-sm">Send</button>
-              </form>
+        <div class="bg-white p-4 sm:p-5 rounded-xl border shadow-sm space-y-3">
+          <div class="flex flex-wrap justify-between items-center gap-2">
+            <h3 class="font-bold text-sm sm:text-base">Branch Fee & Revenue Reports</h3>
+            <div class="flex items-center gap-1">
+              <select id="reportPeriodType" onchange="loadAdminData()" class="border rounded px-2 py-1 text-xs bg-white font-semibold">
+                <option value="day">Day</option>
+                <option value="week">Week</option>
+                <option value="month">Month</option>
+              </select>
+              <input type="date" id="reportDateInput" onchange="loadAdminData()" class="border rounded px-2 py-1 text-xs bg-white font-semibold" />
             </div>
           </div>
+          <div id="branchFinancialSummary" class="space-y-2 text-xs max-h-56 overflow-y-auto"></div>
         </div>
       </div>
 
-      <!-- Student Directory with Search & Edit Feature -->
-      <div class="bg-white p-4 sm:p-5 rounded-xl shadow-sm border border-slate-200 space-y-4">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-          <h3 class="font-bold text-base">Student Accounts & Directory</h3>
-          <input id="studentSearchInput" oninput="filterStudents()" placeholder="🔍 Search by name, phone, or ID..." class="w-full sm:w-72 border rounded-lg px-3 py-2 text-xs" />
-        </div>
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-sm whitespace-nowrap md:whitespace-normal">
-            <thead class="bg-slate-50 border-b">
-              <tr>
-                <th class="py-2.5 px-3">Student Name & Phone</th>
-                <th class="py-2.5 px-3">Course</th>
-                <th class="py-2.5 px-3">Classes Left</th>
-                <th class="py-2.5 px-3">Fee / Paid / Bal</th>
-                <th class="py-2.5 px-3 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="adminEnrollmentsTable" class="divide-y"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- Daily Attendance / Lesson Sorter & History Log -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-6">
-        <div class="bg-white p-4 sm:p-5 rounded-xl shadow-sm border border-slate-200 space-y-3">
-          <div class="flex justify-between items-center">
-            <h3 class="font-bold text-base">Daily Lesson Attendance & Instructor Remarks</h3>
-            <input type="date" id="attendanceDateFilter" onchange="loadAdminData()" class="border rounded px-2.5 py-1 text-xs bg-white font-semibold" />
+      <!-- Exam Roster -->
+      <div class="bg-white p-4 sm:p-5 rounded-xl border shadow-sm space-y-3">
+        <div class="flex justify-between items-center border-b pb-2">
+          <div>
+            <h3 class="font-bold text-sm sm:text-base">All Students Booked for Exam</h3>
+            <p class="text-[11px] text-slate-500" id="totalExamStudentsCounter">Total Booked: 0 students</p>
           </div>
-          <div id="attendanceLessonsList" class="space-y-2.5 text-xs max-h-72 overflow-y-auto"></div>
         </div>
+        <div id="adminExamStatusList" class="space-y-2 text-xs max-h-72 overflow-y-auto"></div>
+      </div>
 
-        <!-- Approval & Rejection History Log -->
-        <div class="bg-white p-4 sm:p-5 rounded-xl shadow-sm border border-slate-200 space-y-3">
-          <h3 class="font-bold text-base">All Requests History Reference (Approved & Rejected)</h3>
-          <div id="historyLogList" class="space-y-2.5 text-xs max-h-72 overflow-y-auto"></div>
+      <!-- CENTRAL ADMIN LIVE CHAT HUB -->
+      <div class="bg-white rounded-xl border shadow-sm overflow-hidden flex flex-col h-[450px]">
+        <div class="bg-[#075E54] text-white px-4 py-3 flex justify-between items-center">
+          <h3 class="font-bold text-sm">Central Student Chat Monitoring & Support</h3>
+          <span class="text-xs bg-emerald-700 px-2 py-0.5 rounded font-semibold" id="activeChatCountBadge">0 Active Chats</span>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 flex-1 overflow-hidden">
+          <div class="border-r bg-slate-50 overflow-y-auto p-2 space-y-1.5 max-h-48 md:max-h-full" id="adminChatStudentList"></div>
+          <div class="md:col-span-2 flex flex-col bg-[#efeae2] h-full">
+            <div id="adminChatHistory" class="flex-1 p-3 overflow-y-auto space-y-2 text-sm"></div>
+            <form onsubmit="sendAdminChatMessage(event)" class="bg-[#f0f2f5] p-2.5 flex gap-2 border-t">
+              <input required id="adminMsgInput" placeholder="Reply as Central Admin..." class="flex-1 bg-white rounded-full px-4 py-2 text-sm" />
+              <button type="submit" class="bg-[#00a884] text-white font-bold px-4 py-2 rounded-full text-sm">Send</button>
+            </form>
+          </div>
         </div>
       </div>
 
+      <!-- Announcements -->
+      <div class="bg-white p-4 sm:p-5 rounded-xl border shadow-sm space-y-3">
+        <h3 class="font-bold text-sm sm:text-base">Broadcast Targeted Announcement</h3>
+        <form onsubmit="sendAnnouncement(event)" class="space-y-3 text-xs">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <input required id="annTitle" placeholder="Announcement Title" class="w-full border rounded p-2" />
+            <select id="annTargetType" onchange="toggleAnnTarget()" class="w-full border rounded p-2 bg-white font-semibold">
+              <option value="ALL">All Enrolled Students</option>
+              <option value="BRANCH">Specific Branch</option>
+              <option value="STUDENT">Specific Student</option>
+            </select>
+            <div id="annTargetSubBox" class="hidden">
+              <select id="annBranchSelect" class="w-full border rounded p-2 bg-white font-semibold">
+                <option value="kiganjo">Kiganjo Branch</option>
+                <option value="thika_cravers">Thika Cravers Branch</option>
+                <option value="makongeni">Makongeni Branch</option>
+                <option value="kimbo">Kimbo Branch</option>
+              </select>
+              <select id="annStudentSelect" class="hidden w-full border rounded p-2 bg-white font-semibold"></select>
+            </div>
+          </div>
+          <textarea required id="annMessage" rows="2" placeholder="Write announcement message..." class="w-full border rounded p-2"></textarea>
+          <button type="submit" class="bg-slate-900 text-white font-bold px-5 py-2 rounded">Send Announcement</button>
+        </form>
+      </div>
+
+      <!-- Register & Directory -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="bg-white p-4 sm:p-5 rounded-xl border shadow-sm">
+          <h3 class="font-bold text-sm sm:text-base mb-3">Register New Student</h3>
+          <form onsubmit="registerStudent(event)" class="space-y-2.5 text-xs">
+            <input required id="stName" placeholder="Full Name" class="w-full border rounded p-2" />
+            <input id="stEmail" type="email" placeholder="Email Address" class="w-full border rounded p-2" />
+            <div class="grid grid-cols-2 gap-2">
+              <input required id="stPhone" placeholder="Phone (07...)" class="w-full border rounded p-2" />
+              <input required id="stId" placeholder="National ID" class="w-full border rounded p-2" />
+            </div>
+            <input id="stPdl" placeholder="PDL Number" class="w-full border rounded p-2" />
+            <select required id="stBranch" class="w-full border rounded p-2 bg-white font-semibold">
+              <option value="kiganjo">Kiganjo Branch</option>
+              <option value="thika_cravers">Thika Cravers Branch</option>
+              <option value="makongeni">Makongeni Branch</option>
+              <option value="kimbo">Kimbo Branch</option>
+            </select>
+            <select required id="stCourse" onchange="autoFillCourse()" class="w-full border rounded p-2 bg-white"></select>
+            <div class="grid grid-cols-2 gap-2">
+              <input required id="stFee" type="number" placeholder="Fee (KES)" class="w-full border rounded p-2 font-semibold" />
+              <input required id="stLessons" type="number" value="24" class="w-full border rounded p-2 font-semibold" />
+            </div>
+            <button type="submit" class="w-full bg-slate-900 text-white font-bold py-2.5 rounded">Register Student</button>
+          </form>
+        </div>
+
+        <div class="lg:col-span-2 bg-white p-4 sm:p-5 rounded-xl border shadow-sm space-y-4">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+            <h3 class="font-bold text-sm sm:text-base">Student Directory & Full Editing</h3>
+            <input id="studentSearchInput" oninput="filterStudents()" placeholder="Search name/phone/ID..." class="w-full sm:w-64 border rounded px-3 py-1.5 text-xs" />
+          </div>
+          <div class="overflow-x-auto max-h-96 overflow-y-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-50 border-b">
+                <tr>
+                  <th class="p-2">Name & Phone</th>
+                  <th class="p-2">Branch</th>
+                  <th class="p-2">Fee / Paid / Bal</th>
+                  <th class="p-2">Lessons Left</th>
+                  <th class="p-2 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="adminEnrollmentsTable" class="divide-y"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </main>
   </div>
 
-  <!-- Footer -->
-  <footer class="text-center py-6 text-xs text-slate-500 border-t mt-12 bg-white">
-    Powered by <a href="https://stackcrafts.com" target="_blank" class="underline font-semibold hover:text-slate-700">stackcraftsstudio</a> • All rights reserved.
-  </footer>
-
-  <!-- REJECTION REASON MODAL -->
-  <div id="rejectModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-    <div class="bg-white p-6 rounded-xl max-w-sm w-full space-y-4 shadow-xl">
-      <h3 class="font-bold text-base text-rose-700 border-b pb-2" id="rejectModalTitle">Reject Request</h3>
-      <form onsubmit="handleFormSubmit(event, confirmRejectAction)" class="space-y-3 text-xs">
-        <input type="hidden" id="rejectItemType" />
-        <input type="hidden" id="rejectItemId" />
-        <div>
-          <label class="font-semibold text-slate-700">Reason for Rejection</label>
-          <textarea required id="rejectReasonInput" rows="3" placeholder="Enter clear reason for the student..." class="w-full border rounded-lg p-2.5 mt-1"></textarea>
-        </div>
-        <div class="flex gap-2 pt-2">
-          <button type="submit" class="flex-1 bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 rounded-lg">Confirm Reject</button>
-          <button type="button" onclick="closeRejectModal()" class="bg-slate-200 font-semibold px-4 py-2.5 rounded-lg">Cancel</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- COMPLETE CLASS WITH REMARKS MODAL -->
-  <div id="remarksModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-    <div class="bg-white p-6 rounded-xl max-w-sm w-full space-y-4 shadow-xl">
-      <h3 class="font-bold text-base text-emerald-800 border-b pb-2">Complete Class & Instructor Remarks</h3>
-      <form onsubmit="handleFormSubmit(event, confirmLessonRemarks)" class="space-y-3 text-xs">
-        <input type="hidden" id="remarksLessonId" />
-        <div>
-          <label class="font-semibold text-slate-700">Instructor Comments / Progress Notes</label>
-          <textarea required id="remarksInput" rows="3" placeholder="e.g. Good steering control, ready for hill start..." class="w-full border rounded-lg p-2.5 mt-1"></textarea>
-        </div>
-        <div class="flex gap-2 pt-2">
-          <button type="submit" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-lg">Save & Complete</button>
-          <button type="button" onclick="closeRemarksModal()" class="bg-slate-200 font-semibold px-4 py-2.5 rounded-lg">Cancel</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- EDIT STUDENT MODAL (Includes Agreed Fee & Fee Paid) -->
+  <!-- EDIT STUDENT MODAL -->
   <div id="editStudentModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-    <div class="bg-white p-6 rounded-xl max-w-md w-full space-y-4 shadow-xl">
-      <h3 class="font-bold text-lg border-b pb-2">Edit Student Account, Fees & Quota</h3>
-      <form onsubmit="handleFormSubmit(event, saveEditedStudent)" class="space-y-3 text-xs">
+    <div class="bg-white p-6 rounded-xl max-w-md w-full space-y-3 text-xs shadow-2xl">
+      <h3 class="font-bold text-base border-b pb-2">Edit Student Profile & Financials</h3>
+      <form onsubmit="saveEditedStudent(event)" class="space-y-2.5">
         <input type="hidden" id="editEnrollmentId" />
-        <div>
-          <label class="font-semibold text-slate-600">Full Name</label>
-          <input required id="editName" class="w-full border rounded px-3 py-2 mt-1" />
-        </div>
-        <div>
-          <label class="font-semibold text-slate-600">Email</label>
-          <input required id="editEmail" type="email" class="w-full border rounded px-3 py-2 mt-1" />
+        <div><label class="font-semibold">Full Name</label><input required id="editName" class="w-full border rounded p-2 mt-0.5" /></div>
+        <div><label class="font-semibold">Email</label><input id="editEmail" type="email" class="w-full border rounded p-2 mt-0.5" /></div>
+        <div class="grid grid-cols-2 gap-2">
+          <div><label class="font-semibold">Phone</label><input required id="editPhone" class="w-full border rounded p-2 mt-0.5" /></div>
+          <div><label class="font-semibold">National ID</label><input required id="editIdNumber" class="w-full border rounded p-2 mt-0.5" /></div>
         </div>
         <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="font-semibold text-slate-600">Phone</label>
-            <input required id="editPhone" class="w-full border rounded px-3 py-2 mt-1" />
-          </div>
-          <div>
-            <label class="font-semibold text-slate-600">National ID</label>
-            <input required id="editIdNumber" class="w-full border rounded px-3 py-2 mt-1" />
+          <div><label class="font-semibold">PDL Number</label><input id="editPdl" class="w-full border rounded p-2 mt-0.5" /></div>
+          <div><label class="font-semibold">Branch</label>
+            <select id="editBranch" class="w-full border rounded p-2 mt-0.5 bg-white font-semibold">
+              <option value="kiganjo">Kiganjo</option><option value="thika_cravers">Thika Cravers</option><option value="makongeni">Makongeni</option><option value="kimbo">Kimbo</option>
+            </select>
           </div>
         </div>
         <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="font-semibold text-slate-600">Agreed Fee (KES)</label>
-            <input required id="editFee" type="number" class="w-full border rounded px-3 py-2 mt-1 font-semibold" />
-          </div>
-          <div>
-            <label class="font-semibold text-emerald-700">Fee Paid (KES)</label>
-            <input required id="editAmountPaid" type="number" class="w-full border border-emerald-300 bg-emerald-50/40 rounded px-3 py-2 mt-1 font-semibold text-emerald-900" />
-          </div>
+          <div><label class="font-semibold">Agreed Fee (KES)</label><input required id="editFee" type="number" class="w-full border rounded p-2 mt-0.5 font-semibold" /></div>
+          <div><label class="font-semibold">Fee Paid (KES)</label><input required id="editPaid" type="number" class="w-full border rounded p-2 mt-0.5 font-semibold text-emerald-700" /></div>
         </div>
         <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="font-semibold text-slate-600">Total Lessons</label>
-            <input required id="editTotalLessons" type="number" class="w-full border rounded px-3 py-2 mt-1 font-semibold" />
-          </div>
-          <div>
-            <label class="font-semibold text-slate-600">Classes Left</label>
-            <input required id="editRemainingLessons" type="number" class="w-full border rounded px-3 py-2 mt-1 font-semibold" />
-          </div>
+          <div><label class="font-semibold">Total Lessons</label><input required id="editTotal" type="number" class="w-full border rounded p-2 mt-0.5" /></div>
+          <div><label class="font-semibold">Classes Left</label><input required id="editRemaining" type="number" class="w-full border rounded p-2 mt-0.5" /></div>
         </div>
-        <div class="flex gap-2 pt-3">
-          <button type="submit" class="flex-1 bg-slate-900 text-white font-bold py-2.5 rounded-lg">Save Changes</button>
-          <button type="button" onclick="closeEditModal()" class="bg-slate-200 font-semibold px-4 py-2.5 rounded-lg">Cancel</button>
+        <div class="flex gap-2 pt-2">
+          <button type="submit" id="btnSaveEdit" class="flex-1 bg-slate-900 text-white font-bold py-2.5 rounded">Save Changes</button>
+          <button type="button" onclick="closeEditModal()" class="bg-slate-200 px-4 py-2.5 rounded font-semibold">Cancel</button>
         </div>
       </form>
     </div>
   </div>
+
+  <footer class="text-center py-6 text-xs text-slate-500 border-t bg-white">Powered by StackcraftsStudio</footer>
 
   <script>
-    const API_BASE = 'https://driving-swa8.onrender.com';
-    let currentAdmin = null;
-    let courses = [], enrollments = [], allMessages = [], allLessons = [], allPayments = [], allExams = [];
-    let selectedChatStudentId = null;
-    let chatPollInterval = null;
-
-    // Helper wrapper to handle double-click protection ("Processing..." & Hide)
-    async function handleFormSubmit(e, callback) {
-      e.preventDefault();
-      const submitBtn = e.target.querySelector('button[type="submit"]') || e.submitter;
-      
-      let originalText = '';
-      if (submitBtn) {
-        originalText = submitBtn.innerHTML;
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = 'Processing...';
-      }
-
-      try {
-        await callback(e);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        if (submitBtn) {
-          // Hide button and reset state smoothly
-          submitBtn.classList.add('hidden');
-          setTimeout(() => {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = originalText;
-            submitBtn.classList.remove('hidden');
-          }, 1500);
-        }
-      }
-    }
+    const API_BASE = 'http://localhost:5000';
+    let courses = [], enrollments = [], allMessages = [], allStudentsMap = new Map(), activeAdminChatStudentId = null;
 
     async function handleAdminLogin(e) {
-      const res = await fetch(`${API_BASE}/api/admin/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: document.getElementById('adminUser').value, password: document.getElementById('adminPass').value })
-      }).then(r => r.json());
-      if (!res.success) return alert(res.error);
-      currentAdmin = res.admin;
-      sessionStorage.setItem('movitec_admin', JSON.stringify(currentAdmin));
-      showAdminPortal();
-    }
+      e.preventDefault();
+      try {
+        const res = await fetch(`${API_BASE}/api/admin/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: document.getElementById('adminUser').value, password: document.getElementById('adminPass').value })
+        }).then(r => r.json());
+        if (!res.success) return alert(res.error);
+        
+        document.getElementById('adminLoginScreen').classList.add('hidden');
+        document.getElementById('adminDashboard').classList.remove('hidden');
+        document.getElementById('adminLogoutBtn').classList.remove('hidden');
+        document.getElementById('reportDateInput').value = new Date().toISOString().split('T')[0];
 
-    function adminLogout() {
-      sessionStorage.removeItem('movitec_admin');
-      if (chatPollInterval) clearInterval(chatPollInterval);
-      location.reload();
-    }
-
-    async function showAdminPortal() {
-      document.getElementById('adminLoginScreen').classList.add('hidden');
-      document.getElementById('adminDashboard').classList.remove('hidden');
-      document.getElementById('adminUserBox').classList.remove('hidden');
-      document.getElementById('adminNameBadge').textContent = currentAdmin.name;
-
-      document.getElementById('attendanceDateFilter').value = new Date().toISOString().split('T')[0];
-
-      const meta = await fetch(`${API_BASE}/api/meta`).then(r => r.json());
-      courses = meta.courses;
-      document.getElementById('stCourse').innerHTML = courses.map(c => `<option value="${c.id}" data-fee="${c.total_fee}" data-lessons="${c.total_lessons || 24}">${c.name}</option>`).join('');
-      autoFillCourse();
-
-      await loadAdminData();
-      if (chatPollInterval) clearInterval(chatPollInterval);
-      chatPollInterval = setInterval(refreshMessagesOnly, 3000);
+        const meta = await fetch(`${API_BASE}/api/meta`).then(r => r.json());
+        courses = meta.courses;
+        document.getElementById('stCourse').innerHTML = courses.map(c => `<option value="${c.id}" data-fee="${c.total_fee}" data-lessons="${c.total_lessons || 24}">${c.name} (KES ${c.total_fee})</option>`).join('');
+        autoFillCourse();
+        loadAdminData();
+        setInterval(loadAdminData, 5000);
+      } catch (err) {
+        alert('Connection error to backend server: ' + err.message);
+      }
     }
 
     function autoFillCourse() {
@@ -339,284 +244,289 @@
       }
     }
 
-    function toggleStudentChecklist() {
-      document.getElementById('annStudentChecklist').classList.toggle('hidden', document.getElementById('annTarget').value !== 'SOME');
-    }
-
-    async function refreshMessagesOnly() {
-      if (!currentAdmin) return;
-      const msgs = await fetch(`${API_BASE}/api/messages`).then(r => r.json());
-      if (Array.isArray(msgs)) {
-        allMessages = msgs;
-        renderMessageThreads();
+    function toggleAnnTarget() {
+      const type = document.getElementById('annTargetType').value;
+      const subBox = document.getElementById('annTargetSubBox');
+      const branchSel = document.getElementById('annBranchSelect');
+      const studentSel = document.getElementById('annStudentSelect');
+      if (type === 'ALL') {
+        subBox.classList.add('hidden');
+      } else {
+        subBox.classList.remove('hidden');
+        if (type === 'BRANCH') {
+          branchSel.classList.remove('hidden');
+          studentSel.classList.add('hidden');
+        } else {
+          branchSel.classList.add('hidden');
+          studentSel.classList.remove('hidden');
+          studentSel.innerHTML = enrollments.map(e => `<option value="${e.student_id}">${e.profiles.full_name} (${e.profiles.phone})</option>`).join('');
+        }
       }
     }
 
+    async function updateBranchPassword(e) {
+      e.preventDefault();
+      const branch_id = document.getElementById('branchPassId').value;
+      const password = document.getElementById('branchNewPass').value;
+      const res = await fetch(`${API_BASE}/api/admin/branches/password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ branch_id, password })
+      }).then(r => r.json());
+      if (res.success) { alert('Branch password updated successfully!'); document.getElementById('branchNewPass').value = ''; }
+    }
+
+    async function sendAnnouncement(e) {
+      e.preventDefault();
+      const title = document.getElementById('annTitle').value;
+      const message = document.getElementById('annMessage').value;
+      const target = document.getElementById('annTargetType').value;
+      const payload = { target, title, message, admin_name: 'Central Admin' };
+      if (target === 'BRANCH') payload.branch_id = document.getElementById('annBranchSelect').value;
+      if (target === 'STUDENT') payload.student_ids = [document.getElementById('annStudentSelect').value];
+
+      const res = await fetch(`${API_BASE}/api/announcements`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      }).then(r => r.json());
+      if (res.success) { alert('Announcement broadcasted successfully!'); e.target.reset(); toggleAnnTarget(); }
+    }
+
     async function loadAdminData() {
-      const dateVal = document.getElementById('attendanceDateFilter').value;
-      const [enrRes, allLesRes, dailyLesRes, payRes, exRes, msgRes] = await Promise.all([
-        fetch(`${API_BASE}/api/enrollments`).then(r => r.json()),
-        fetch(`${API_BASE}/api/lessons`).then(r => r.json()),
-        fetch(`${API_BASE}/api/lessons${dateVal ? `?date=${dateVal}` : ''}`).then(r => r.json()),
-        fetch(`${API_BASE}/api/payments`).then(r => r.json()),
-        fetch(`${API_BASE}/api/exams`).then(r => r.json()),
-        fetch(`${API_BASE}/api/messages`).then(r => r.json())
-      ]);
+      try {
+        const periodType = document.getElementById('reportPeriodType').value;
+        const refDateStr = document.getElementById('reportDateInput').value;
+        const refDate = refDateStr ? new Date(refDateStr) : new Date();
 
-      enrollments = Array.isArray(enrRes) ? enrRes : [];
-      allLessons = Array.isArray(allLesRes) ? allLesRes : [];
-      const dailyLessons = Array.isArray(dailyLesRes) ? dailyLesRes : [];
-      allPayments = Array.isArray(payRes) ? payRes : [];
-      allExams = Array.isArray(exRes) ? exRes : [];
-      allMessages = Array.isArray(msgRes) ? msgRes : [];
+        const [enrRes, payRes, examRes, msgRes] = await Promise.all([
+          fetch(`${API_BASE}/api/enrollments`).then(r => r.json()),
+          fetch(`${API_BASE}/api/payments`).then(r => r.json()),
+          fetch(`${API_BASE}/api/exams`).then(r => r.json()),
+          fetch(`${API_BASE}/api/messages`).then(r => r.json())
+        ]);
 
-      document.getElementById('annStudentChecklist').innerHTML = enrollments.map(e => `
-        <label class="flex items-center gap-2 cursor-pointer p-1 hover:bg-white rounded">
-          <input type="checkbox" name="annStudentIds" value="${e.student_id}" class="rounded text-amber-500" />
-          <span class="font-medium">${e.profiles.full_name}</span> <span class="text-slate-400">(${e.profiles.phone})</span>
-        </label>
-      `).join('');
+        enrollments = Array.isArray(enrRes) ? enrRes : [];
+        allStudentsMap.clear();
+        enrollments.forEach(e => {
+          if (e.profiles) allStudentsMap.set(e.student_id, e.profiles);
+        });
 
-      renderStudentsTable(enrollments);
+        renderStudentsTable(enrollments);
 
-      // Pending Class Requests
-      document.getElementById('pendingLessonsList').innerHTML = allLessons.filter(l => l.status === 'pending').map(l => `
-        <div class="p-2.5 rounded-lg border border-amber-200 bg-amber-50 space-y-2">
-          <p class="font-bold">${l.student?.full_name} (${l.student?.phone})</p>
-          <p class="text-[11px] capitalize">${l.lesson_type} • ${new Date(l.scheduled_at).toLocaleString()}</p>
-          <div class="flex gap-1.5">
-            <button onclick="approveLesson(this, '${l.id}')" class="flex-1 bg-emerald-600 text-white py-1 rounded font-bold transition">Approve</button>
-            <button onclick="openRejectModal('lesson', '${l.id}', 'Reject Class Request')" class="bg-rose-600 text-white px-2.5 py-1 rounded font-bold">Reject</button>
+        const branchStats = {
+          kiganjo: { required: 0, paid: 0, clearedCount: 0, periodCollected: 0 },
+          thika_cravers: { required: 0, paid: 0, clearedCount: 0, periodCollected: 0 },
+          makongeni: { required: 0, paid: 0, clearedCount: 0, periodCollected: 0 },
+          kimbo: { required: 0, paid: 0, clearedCount: 0, periodCollected: 0 }
+        };
+
+        enrollments.forEach(e => {
+          const b = e.profiles?.branch;
+          if (b && branchStats[b]) {
+            branchStats[b].required += Number(e.agreed_fee);
+            branchStats[b].paid += Number(e.amount_paid);
+            if (Number(e.amount_paid) >= Number(e.agreed_fee)) {
+              branchStats[b].clearedCount += 1;
+            }
+          }
+        });
+
+        (Array.isArray(payRes) ? payRes : []).filter(p => p.status === 'approved').forEach(p => {
+          const b = p.student?.branch;
+          if (!b || !branchStats[b] || !p.paid_at) return;
+          const pDate = new Date(p.paid_at);
+          let match = false;
+
+          if (periodType === 'day') {
+            match = pDate.toISOString().split('T')[0] === refDate.toISOString().split('T')[0];
+          } else if (periodType === 'week') {
+            const startOfWeek = new Date(refDate);
+            startOfWeek.setDate(refDate.getDate() - refDate.getDay());
+            startOfWeek.setHours(0,0,0,0);
+            const endOfWeek = new Date(startOfWeek);
+            endOfWeek.setDate(startOfWeek.getDate() + 6);
+            endOfWeek.setHours(23,59,59,999);
+            match = pDate >= startOfWeek && pDate <= endOfWeek;
+          } else if (periodType === 'month') {
+            match = pDate.getFullYear() === refDate.getFullYear() && pDate.getMonth() === refDate.getMonth();
+          }
+
+          if (match) {
+            branchStats[b].periodCollected += Number(p.amount);
+          }
+        });
+
+        let summaryHtml = '';
+        Object.keys(branchStats).forEach(bKey => {
+          const st = branchStats[bKey];
+          const bName = bKey.replace('_', ' ').toUpperCase();
+          summaryHtml += `
+            <div class="p-3 border rounded bg-slate-50 space-y-1">
+              <p class="font-bold text-slate-900">${bName}</p>
+              <div class="grid grid-cols-2 gap-2 text-[11px] text-slate-600">
+                <div>Required Fee: <span class="font-semibold text-slate-900">KES ${st.required}</span></div>
+                <div>Total Paid: <span class="font-semibold text-emerald-700">KES ${st.paid}</span></div>
+                <div>Cleared Students: <span class="font-semibold text-indigo-700">${st.clearedCount}</span></div>
+                <div>Collected (${periodType.toUpperCase()}) : <span class="font-bold text-amber-700">KES ${st.periodCollected}</span></div>
+              </div>
+            </div>
+          `;
+        });
+        document.getElementById('branchFinancialSummary').innerHTML = summaryHtml;
+
+        const examsList = Array.isArray(examRes) ? examRes : [];
+        document.getElementById('totalExamStudentsCounter').textContent = `Total Booked: ${examsList.length} students`;
+        document.getElementById('adminExamStatusList').innerHTML = examsList.map(ex => `
+          <div class="p-2.5 border rounded flex justify-between items-center bg-slate-50">
+            <div>
+              <p class="font-bold text-slate-900">${ex.student?.full_name} <span class="font-normal text-slate-500">(${ex.student?.phone})</span></p>
+              <p class="text-[10px] text-slate-600">Branch: <span class="uppercase font-bold text-indigo-700">${ex.student?.branch || 'N/A'}</span> • Preferred Date: <b>${ex.preferred_date}</b></p>
+            </div>
+            <span class="px-2.5 py-1 rounded uppercase font-bold text-[10px] ${ex.status === 'passed' ? 'bg-emerald-100 text-emerald-800' : ex.status === 'failed' ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800'}">${ex.status}</span>
           </div>
-        </div>
-      `).join('') || '<p class="text-slate-400 text-xs">No pending classes.</p>';
+        `).join('') || '<p class="text-slate-400">No students booked for exam yet.</p>';
 
-      // Daily Attendance List
-      document.getElementById('attendanceLessonsList').innerHTML = dailyLessons.map(l => `
-        <div class="p-2.5 rounded border bg-slate-50 flex justify-between items-center gap-2">
-          <div>
-            <p class="font-bold">${l.student?.full_name} (${l.student?.phone})</p>
-            <p class="text-[10px] text-slate-500 capitalize">${l.lesson_type} • ${new Date(l.scheduled_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
-            <p class="text-[10px] text-slate-700 mt-0.5"><b>Remarks:</b> ${l.instructor_remarks || 'None yet'}</p>
-          </div>
-          <div class="flex flex-col items-end gap-1">
-            <span class="text-[10px] px-2 py-0.5 rounded font-bold uppercase ${l.status === 'approved' || l.status === 'completed' ? 'bg-emerald-100 text-emerald-800' : l.status === 'rejected' ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800'}">${l.status}</span>
-            ${l.status === 'approved' ? `<button onclick="openRemarksModal('${l.id}')" class="text-[10px] bg-slate-800 text-white px-2 py-1 rounded font-semibold">Complete & Comment</button>` : ''}
-          </div>
-        </div>
-      `).join('') || '<p class="text-slate-400 text-xs">No attendance logs for this date.</p>';
+        allMessages = Array.isArray(msgRes) ? msgRes : [];
+        renderAdminChatSidebar();
+      } catch (err) {
+        console.error('Failed to load admin data:', err);
+      }
+    }
 
-      // Pending Payments
-      document.getElementById('pendingPaymentsList').innerHTML = allPayments.filter(p => p.status === 'pending').map(p => `
-        <div class="p-2.5 rounded-lg border border-emerald-200 bg-emerald-50 space-y-2">
-          <p class="font-bold">${p.student?.full_name} — KES ${p.amount}</p>
-          <p class="text-[11px] uppercase">${p.payment_method} • Ref: <b>${p.reference_code || 'N/A'}</b></p>
-          <div class="flex gap-1.5">
-            <button onclick="approvePayment(this, '${p.id}')" class="flex-1 bg-emerald-600 text-white py-1 rounded font-bold transition">Approve</button>
-            <button onclick="openRejectModal('payment', '${p.id}', 'Reject Payment Submission')" class="bg-rose-600 text-white px-2.5 py-1 rounded font-bold">Reject</button>
-          </div>
-        </div>
-      `).join('') || '<p class="text-slate-400 text-xs">No pending payments.</p>';
-
-      // Pending Exams
-      document.getElementById('pendingExamsList').innerHTML = allExams.filter(ex => ex.status === 'pending').map(ex => `
-        <div class="p-2.5 rounded-lg border border-indigo-200 bg-indigo-50 space-y-2">
-          <p class="font-bold">${ex.student?.full_name} (${ex.student?.phone})</p>
-          <p class="text-[11px]">Preferred Date: <b>${ex.preferred_date}</b></p>
-          <input type="datetime-local" id="examTime_${ex.id}" class="w-full border rounded px-2 py-1.5 text-[11px] bg-white" />
-          <div class="flex gap-1.5">
-            <button onclick="approveExam(this, '${ex.id}')" class="flex-1 bg-indigo-600 text-white py-1.5 rounded font-bold transition">Approve & Time</button>
-            <button onclick="openRejectModal('exam', '${ex.id}', 'Reject Exam Request')" class="bg-rose-600 text-white px-2.5 py-1.5 rounded font-bold">Reject</button>
-          </div>
-        </div>
-      `).join('') || '<p class="text-slate-400 text-xs">No pending exams.</p>';
-
-      // History Log
-      const processedLessons = allLessons.filter(l => l.status !== 'pending');
-      const processedPayments = allPayments.filter(p => p.status !== 'pending');
-      const processedExams = allExams.filter(ex => ex.status !== 'pending');
-
-      let historyHtml = '';
-      processedLessons.forEach(l => {
-        historyHtml += `<div class="p-2.5 rounded border bg-slate-50 flex justify-between items-center gap-2">
-          <div>
-            <p class="font-bold">[Lesson] ${l.student?.full_name} (${l.lesson_type})</p>
-            <p class="text-[10px] text-slate-500">${new Date(l.scheduled_at).toLocaleDateString()} • ${l.status === 'rejected' ? `Reason: ${l.rejection_reason || 'None'}` : `Remarks: ${l.instructor_remarks || 'Approved'}`}</p>
-          </div>
-          <span class="text-[10px] px-2 py-0.5 rounded font-bold uppercase ${l.status === 'rejected' ? 'bg-rose-100 text-rose-800' : 'bg-emerald-100 text-emerald-800'}">${l.status}</span>
-        </div>`;
+    function renderAdminChatSidebar() {
+      const studentMap = new Map();
+      allMessages.forEach(m => {
+        if (!studentMap.has(m.student_id)) {
+          studentMap.set(m.student_id, { student_id: m.student_id, lastMsgTime: m.created_at, student: m.student || allStudentsMap.get(m.student_id) });
+        } else {
+          const existing = studentMap.get(m.student_id);
+          if (new Date(m.created_at) > new Date(existing.lastMsgTime)) {
+            existing.lastMsgTime = m.created_at;
+          }
+        }
       });
-      processedPayments.forEach(p => {
-        historyHtml += `<div class="p-2.5 rounded border bg-slate-50 flex justify-between items-center gap-2">
-          <div>
-            <p class="font-bold">[Payment] ${p.student?.full_name} — KES ${p.amount}</p>
-            <p class="text-[10px] text-slate-500">Ref: ${p.reference_code || 'N/A'} • ${p.status === 'rejected' ? `Reason: ${p.rejection_reason || 'None'}` : 'Verified'}</p>
-          </div>
-          <span class="text-[10px] px-2 py-0.5 rounded font-bold uppercase ${p.status === 'rejected' ? 'bg-rose-100 text-rose-800' : 'bg-emerald-100 text-emerald-800'}">${p.status}</span>
-        </div>`;
-      });
-      processedExams.forEach(ex => {
-        historyHtml += `<div class="p-2.5 rounded border bg-slate-50 flex justify-between items-center gap-2">
-          <div>
-            <p class="font-bold">[Exam] ${ex.student?.full_name}</p>
-            <p class="text-[10px] text-slate-500">Pref: ${ex.preferred_date} • ${ex.status === 'rejected' ? `Reason: ${ex.rejection_reason || 'None'}` : `Scheduled: ${ex.exam_datetime ? new Date(ex.exam_datetime).toLocaleString() : 'Approved'}`}</p>
-          </div>
-          <span class="text-[10px] px-2 py-0.5 rounded font-bold uppercase ${ex.status === 'rejected' ? 'bg-rose-100 text-rose-800' : 'bg-emerald-100 text-emerald-800'}">${ex.status}</span>
-        </div>`;
-      });
 
-      document.getElementById('historyLogList').innerHTML = historyHtml || '<p class="text-slate-400 text-xs">No historical records yet.</p>';
+      const sortedChats = Array.from(studentMap.values()).sort((a,b) => new Date(b.lastMsgTime) - new Date(a.lastMsgTime));
+      document.getElementById('activeChatCountBadge').textContent = `${sortedChats.length} Active Chats`;
 
-      renderMessageThreads();
+      if (!activeAdminChatStudentId && sortedChats.length > 0) {
+        activeAdminChatStudentId = sortedChats[0].student_id;
+      }
+
+      document.getElementById('adminChatStudentList').innerHTML = sortedChats.map(item => {
+        const st = item.student || { full_name: 'Student', phone: '', branch: '' };
+        const isActive = item.student_id === activeAdminChatStudentId;
+        return `
+          <div onclick="activeAdminChatStudentId = '${item.student_id}'; renderAdminChatSidebar();" class="p-2.5 rounded cursor-pointer border transition ${isActive ? 'bg-indigo-50 border-indigo-300 font-bold' : 'bg-white hover:bg-slate-100'}">
+            <p class="text-xs text-slate-900">${st.full_name}</p>
+            <p class="text-[10px] text-slate-500 uppercase">${st.branch || 'Branch'} • ${st.phone}</p>
+          </div>
+        `;
+      }).join('') || '<p class="text-xs text-slate-400 p-3">No active chats.</p>';
+
+      renderAdminChatHistory();
+    }
+
+    function renderAdminChatHistory() {
+      const container = document.getElementById('adminChatHistory');
+      if (!activeAdminChatStudentId) {
+        container.innerHTML = '<p class="text-center text-xs text-slate-400 mt-10">Select a student chat to view and reply</p>';
+        return;
+      }
+      const thread = allMessages.filter(m => m.student_id === activeAdminChatStudentId);
+      container.innerHTML = thread.map(m => {
+        const isAdmin = m.sender_role === 'admin';
+        return `
+          <div class="flex ${isAdmin ? 'justify-end' : 'justify-start'}">
+            <div class="max-w-[80%] px-3 py-1.5 rounded bg-white shadow-sm">
+              <p class="text-[9px] font-bold text-amber-700">${m.sender_name}</p>
+              <p class="text-xs">${m.message}</p>
+              <p class="text-[8px] text-slate-400 text-right mt-0.5">${new Date(m.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
+            </div>
+          </div>
+        `;
+      }).join('') || '<p class="text-center text-xs text-slate-400">No messages in thread.</p>';
+      container.scrollTop = container.scrollHeight;
+    }
+
+    async function sendAdminChatMessage(e) {
+      e.preventDefault();
+      if (!activeAdminChatStudentId) return;
+      const input = document.getElementById('adminMsgInput');
+      const res = await fetch(`${API_BASE}/api/messages`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ student_id: activeAdminChatStudentId, sender_role: 'admin', sender_name: 'Central Admin', message: input.value })
+      }).then(r => r.json());
+      if (res.success) {
+        input.value = '';
+        const msgRes = await fetch(`${API_BASE}/api/messages`).then(r => r.json());
+        allMessages = Array.isArray(msgRes) ? msgRes : [];
+        renderAdminChatSidebar();
+      }
     }
 
     function renderStudentsTable(list) {
       document.getElementById('adminEnrollmentsTable').innerHTML = list.map(e => {
-        const isFinished = e.status === 'completed';
         const balance = Number(e.agreed_fee) - Number(e.amount_paid);
-        const readyToFinish = !isFinished && Number(e.remaining_lessons) === 0 && balance <= 0;
-
+        const safeName = (e.profiles?.full_name || '').replace(/'/g, "\\'");
         return `
-          <tr class="${isFinished ? 'bg-emerald-50/40' : ''}">
-            <td class="py-3 px-3 font-medium">${e.profiles.full_name}<br><span class="text-xs text-slate-500 font-mono">${e.profiles.phone} • ID: ${e.profiles.id_number}</span></td>
-            <td class="py-3 px-3">${e.courses?.name || '-'}</td>
-            <td class="py-3 px-3 font-extrabold ${isFinished ? 'text-emerald-700' : 'text-amber-600'}">${isFinished ? '0 left (Done)' : `${e.remaining_lessons} / ${e.total_lessons}`}</td>
-            <td class="py-3 px-3 text-xs">Fee: KES ${e.agreed_fee}<br>Paid: <span class="text-emerald-600">KES ${e.amount_paid}</span><br>Bal: <span class="${balance <= 0 ? 'text-emerald-600 font-bold' : 'text-rose-600'}">KES ${Math.max(0, balance)}</span></td>
-            <td class="py-3 px-3 text-right space-x-1.5">
-              <button onclick="openEditModal('${e.id}', '${e.profiles.full_name.replace(/'/g, "\\'")}', '${e.profiles.email}', '${e.profiles.phone}', '${e.profiles.id_number || ''}', '${e.profiles.pdl_number || ''}', ${e.agreed_fee}, ${e.amount_paid}, ${e.total_lessons}, ${e.remaining_lessons})" class="bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold px-2.5 py-1.5 rounded">Edit</button>
-              ${isFinished 
-                ? '<span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1.5 rounded-full">✓ FINISHED</span>' 
-                : (readyToFinish 
-                    ? `<button onclick="markFinishedClasses(this, '${e.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-2.5 py-1.5 rounded animate-pulse transition">Mark Finished</button>` 
-                    : '')}
+          <tr class="border-b">
+            <td class="p-2 font-medium">${e.profiles?.full_name}<br><span class="text-[10px] text-slate-500">${e.profiles?.phone}</span></td>
+            <td class="p-2 uppercase font-bold text-[10px] text-indigo-700">${e.profiles?.branch || 'Unassigned'}</td>
+            <td class="p-2">Fee: ${e.agreed_fee}<br>Paid: <span class="text-emerald-600">${e.amount_paid}</span><br>Bal: <span class="text-rose-600">${Math.max(0, balance)}</span></td>
+            <td class="p-2 font-bold">${e.remaining_lessons} / ${e.total_lessons}</td>
+            <td class="p-2 text-right">
+              <button type="button" onclick="openEditModal('${e.id}', '${safeName}', '${e.profiles?.email || ''}', '${e.profiles?.phone || ''}', '${e.profiles?.id_number || ''}', '${e.profiles?.pdl_number || ''}', '${e.profiles?.branch || 'kiganjo'}', ${e.agreed_fee}, ${e.amount_paid}, ${e.total_lessons}, ${e.remaining_lessons})" class="bg-slate-900 text-white px-3 py-1 rounded font-bold hover:bg-slate-800">Edit</button>
             </td>
           </tr>
         `;
-      }).join('') || '<tr><td colspan="5" class="text-center py-4 text-slate-400 text-xs">No students found.</td></tr>';
-    }
-
-    async function markFinishedClasses(btn, id) {
-      const confirmed = confirm("This change will guarantee finishing of school and changes are irreversible. Proceed?");
-      if (!confirmed) return;
-      
-      const originalText = btn.innerHTML;
-      btn.disabled = true;
-      btn.innerHTML = 'Processing...';
-
-      try {
-        const res = await fetch(`${API_BASE}/api/enrollments/${id}/complete`, { method: 'PATCH' }).then(r => r.json());
-        if (!res.success) return alert(res.error || 'Failed to complete student.');
-        await loadAdminData();
-      } finally {
-        btn.classList.add('hidden');
-        setTimeout(() => {
-          btn.disabled = false;
-          btn.innerHTML = originalText;
-          btn.classList.remove('hidden');
-        }, 1500);
-      }
-    }
-
-    // REJECTION MODAL LOGIC
-    function openRejectModal(type, id, title) {
-      document.getElementById('rejectItemType').value = type;
-      document.getElementById('rejectItemId').value = id;
-      document.getElementById('rejectModalTitle').textContent = title;
-      document.getElementById('rejectReasonInput').value = '';
-      document.getElementById('rejectModal').classList.remove('hidden');
-      document.getElementById('rejectReasonInput').focus();
-    }
-
-    function closeRejectModal() {
-      document.getElementById('rejectModal').classList.add('hidden');
-    }
-
-    async function confirmRejectAction(e) {
-      const type = document.getElementById('rejectItemType').value;
-      const id = document.getElementById('rejectItemId').value;
-      const reason = document.getElementById('rejectReasonInput').value.trim();
-
-      let url = '';
-      if (type === 'lesson') url = `${API_BASE}/api/lessons/${id}`;
-      else if (type === 'payment') url = `${API_BASE}/api/payments/${id}/approve`;
-      else if (type === 'exam') url = `${API_BASE}/api/exams/${id}`;
-
-      const res = await fetch(url, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'rejected', rejection_reason: reason })
-      }).then(r => r.json());
-
-      if (!res.success) return alert('Failed to reject: ' + (res.error || 'Unknown error'));
-      closeRejectModal();
-      await loadAdminData();
-    }
-
-    // REMARKS MODAL LOGIC
-    function openRemarksModal(lessonId) {
-      document.getElementById('remarksLessonId').value = lessonId;
-      document.getElementById('remarksInput').value = '';
-      document.getElementById('remarksModal').classList.remove('hidden');
-      document.getElementById('remarksInput').focus();
-    }
-
-    function closeRemarksModal() {
-      document.getElementById('remarksModal').classList.add('hidden');
-    }
-
-    async function confirmLessonRemarks(e) {
-      const id = document.getElementById('remarksLessonId').value;
-      const remarks = document.getElementById('remarksInput').value.trim();
-
-      const res = await fetch(`${API_BASE}/api/lessons/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'completed', instructor_remarks: remarks })
-      }).then(r => r.json());
-
-      if (!res.success) return alert('Error saving remarks: ' + res.error);
-      closeRemarksModal();
-      await loadAdminData();
+      }).join('') || '<tr><td colspan="5" class="text-center p-3 text-slate-400">No students found.</td></tr>';
     }
 
     function filterStudents() {
-      const query = document.getElementById('studentSearchInput').value.toLowerCase();
-      const filtered = enrollments.filter(e => 
-        e.profiles.full_name.toLowerCase().includes(query) ||
-        e.profiles.phone.toLowerCase().includes(query) ||
-        (e.profiles.id_number && e.profiles.id_number.toLowerCase().includes(query))
-      );
-      renderStudentsTable(filtered);
+      const q = document.getElementById('studentSearchInput').value.toLowerCase();
+      renderStudentsTable(enrollments.filter(e => e.profiles?.full_name.toLowerCase().includes(q) || e.profiles?.phone.includes(q)));
     }
 
-    function openEditModal(id, name, email, phone, idNum, pdl, fee, paid, total, remaining) {
+    function openEditModal(id, name, email, phone, idNum, pdl, branch, fee, paid, total, remaining) {
       document.getElementById('editEnrollmentId').value = id;
       document.getElementById('editName').value = name;
       document.getElementById('editEmail').value = email;
       document.getElementById('editPhone').value = phone;
       document.getElementById('editIdNumber').value = idNum;
+      document.getElementById('editPdl').value = pdl;
+      document.getElementById('editBranch').value = branch;
       document.getElementById('editFee').value = fee;
-      document.getElementById('editAmountPaid').value = paid;
-      document.getElementById('editTotalLessons').value = total;
-      document.getElementById('editRemainingLessons').value = remaining;
+      document.getElementById('editPaid').value = paid;
+      document.getElementById('editTotal').value = total;
+      document.getElementById('editRemaining').value = remaining;
       document.getElementById('editStudentModal').classList.remove('hidden');
     }
 
-    function closeEditModal() {
-      document.getElementById('editStudentModal').classList.add('hidden');
+    function closeEditModal() { 
+      document.getElementById('editStudentModal').classList.add('hidden'); 
     }
 
     async function saveEditedStudent(e) {
+      e.preventDefault();
+      const saveBtn = document.getElementById('btnSaveEdit');
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Saving...';
+
       const id = document.getElementById('editEnrollmentId').value;
       const payload = {
         full_name: document.getElementById('editName').value,
         email: document.getElementById('editEmail').value,
         phone: document.getElementById('editPhone').value,
         id_number: document.getElementById('editIdNumber').value,
+        pdl_number: document.getElementById('editPdl').value,
+        branch: document.getElementById('editBranch').value,
         agreed_fee: Number(document.getElementById('editFee').value),
-        amount_paid: Number(document.getElementById('editAmountPaid').value),
-        total_lessons: Number(document.getElementById('editTotalLessons').value),
-        remaining_lessons: Number(document.getElementById('editRemainingLessons').value)
+        amount_paid: Number(document.getElementById('editPaid').value),
+        total_lessons: Number(document.getElementById('editTotal').value),
+        remaining_lessons: Number(document.getElementById('editRemaining').value)
       };
 
       const res = await fetch(`${API_BASE}/api/enrollments/${id}`, {
@@ -625,173 +535,38 @@
         body: JSON.stringify(payload)
       }).then(r => r.json());
 
+      saveBtn.disabled = false;
+      saveBtn.textContent = 'Save Changes';
+
       if (!res.success) return alert(res.error);
       closeEditModal();
       alert('Student updated successfully!');
-      await loadAdminData();
-    }
-
-    function renderMessageThreads() {
-      const map = new Map();
-      enrollments.forEach(e => map.set(e.student_id, { id: e.student_id, name: e.profiles.full_name, phone: e.profiles.phone, lastMsg: 'No messages yet', count: 0 }));
-      allMessages.forEach(m => {
-        if (!map.has(m.student_id)) map.set(m.student_id, { id: m.student_id, name: m.student?.full_name || m.sender_name || 'Student', phone: m.student?.phone || '', lastMsg: m.message, count: 0 });
-        const item = map.get(m.student_id);
-        item.count++;
-        item.lastMsg = m.message;
-      });
-
-      document.getElementById('messageThreadsList').innerHTML = Array.from(map.values()).map(s => `
-        <div onclick="selectChat('${s.id}')" class="p-3 cursor-pointer transition ${selectedChatStudentId === s.id ? 'bg-[#f0f2f5] border-l-4 border-[#00a884]' : 'hover:bg-slate-50'}">
-          <div class="flex justify-between items-center"><p class="font-bold text-xs">${s.name}</p><span class="text-[10px] bg-[#25D366] text-white px-1.5 py-0.5 rounded-full font-bold">${s.count}</span></div>
-          <p class="text-[11px] font-mono text-emerald-700 font-semibold">${s.phone}</p>
-          <p class="text-[11px] text-slate-500 truncate mt-0.5">${s.lastMsg}</p>
-        </div>
-      `).join('') || '<p class="p-4 text-xs text-slate-400">No chats yet.</p>';
-
-      if (selectedChatStudentId) {
-        const active = map.get(selectedChatStudentId);
-        if (active) document.getElementById('chatHeaderSub').textContent = `Chatting with: ${active.name} (${active.phone})`;
-        renderActiveChat();
-      }
-    }
-
-    function selectChat(id) {
-      selectedChatStudentId = id;
-      document.getElementById('adminReplyForm').classList.remove('hidden');
-      renderMessageThreads();
-      document.getElementById('adminReplyInput').focus();
-    }
-
-    function renderActiveChat() {
-      const container = document.getElementById('activeChatHistory');
-      const thread = allMessages.filter(m => m.student_id === selectedChatStudentId);
-      container.innerHTML = thread.map(m => {
-        const isAdmin = m.sender_role === 'admin';
-        return `
-          <div class="flex ${isAdmin ? 'justify-end' : 'justify-start'}">
-            <div class="max-w-[85%] sm:max-w-[80%] px-3 py-2 rounded-lg shadow-sm ${isAdmin ? 'bg-[#d9fdd3]' : 'bg-white'}">
-              <p class="text-[10px] font-bold ${isAdmin ? 'text-emerald-800' : 'text-amber-700'}">${isAdmin ? m.sender_name : (m.student?.full_name || m.sender_name)}</p>
-              <p class="text-xs whitespace-pre-wrap">${m.message}</p>
-              <p class="text-[9px] text-slate-400 text-right mt-1">${new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
-            </div>
-          </div>
-        `;
-      }).join('') || '<div class="h-full flex items-center justify-center"><span class="text-xs text-slate-400">Say hello!</span></div>';
-      container.scrollTop = container.scrollHeight;
-    }
-
-    async function sendAdminReply(e) {
-      if (!selectedChatStudentId) return;
-      const input = document.getElementById('adminReplyInput');
-      const msg = input.value;
-      input.value = '';
-      await fetch(`${API_BASE}/api/messages`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ student_id: selectedChatStudentId, sender_role: 'admin', sender_name: currentAdmin.name, message: msg })
-      });
-      await refreshMessagesOnly();
-    }
-
-    async function sendAnnouncement(e) {
-      const target = document.getElementById('annTarget').value;
-      const student_ids = target === 'SOME' ? Array.from(document.querySelectorAll('input[name="annStudentIds"]:checked')).map(cb => cb.value) : [];
-      await fetch(`${API_BASE}/api/announcements`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ target, student_ids, title: document.getElementById('annTitle').value, message: document.getElementById('annMessage').value, admin_name: currentAdmin.name })
-      });
-      e.target.reset();
-      alert('Announcement sent!');
-      await refreshMessagesOnly();
-    }
-
-    async function approveExam(btn, id) {
-      const dt = document.getElementById(`examTime_${id}`).value;
-      if (!dt) return alert('Select exam date & time.');
-
-      const originalText = btn.innerHTML;
-      btn.disabled = true;
-      btn.innerHTML = 'Processing...';
-
-      try {
-        const res = await fetch(`${API_BASE}/api/exams/${id}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ status: 'approved', exam_datetime: new Date(dt).toISOString() })
-        }).then(r => r.json());
-        if (!res.success) return alert(res.error);
-        await loadAdminData();
-      } finally {
-        btn.classList.add('hidden');
-        setTimeout(() => {
-          btn.disabled = false;
-          btn.innerHTML = originalText;
-          btn.classList.remove('hidden');
-        }, 1500);
-      }
+      loadAdminData();
     }
 
     async function registerStudent(e) {
+      e.preventDefault();
+      const payload = {
+        full_name: document.getElementById('stName').value,
+        email: document.getElementById('stEmail').value,
+        phone: document.getElementById('stPhone').value,
+        id_number: document.getElementById('stId').value,
+        pdl_number: document.getElementById('stPdl').value,
+        branch: document.getElementById('stBranch').value,
+        course_id: document.getElementById('stCourse').value,
+        agreed_fee: Number(document.getElementById('stFee').value),
+        total_lessons: Number(document.getElementById('stLessons').value)
+      };
       const res = await fetch(`${API_BASE}/api/students`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          full_name: document.getElementById('stName').value, email: document.getElementById('stEmail').value,
-          phone: document.getElementById('stPhone').value, id_number: document.getElementById('stId').value,
-          pdl_number: document.getElementById('stPdl').value, course_id: document.getElementById('stCourse').value,
-          agreed_fee: Number(document.getElementById('stFee').value), total_lessons: Number(document.getElementById('stLessons').value)
-        })
+        body: JSON.stringify(payload)
       }).then(r => r.json());
       if (!res.success) return alert(res.error);
       e.target.reset();
-      await showAdminPortal();
-      alert('Student registered!');
+      alert('Student registered successfully!');
+      loadAdminData();
     }
-
-    async function approveLesson(btn, id) {
-      const originalText = btn.innerHTML;
-      btn.disabled = true;
-      btn.innerHTML = 'Processing...';
-
-      try {
-        const res = await fetch(`${API_BASE}/api/lessons/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'approved' }) }).then(r => r.json());
-        if (!res.success) return alert(res.error);
-        await loadAdminData();
-      } finally {
-        btn.classList.add('hidden');
-        setTimeout(() => {
-          btn.disabled = false;
-          btn.innerHTML = originalText;
-          btn.classList.remove('hidden');
-        }, 1500);
-      }
-    }
-
-    async function approvePayment(btn, id) {
-      const originalText = btn.innerHTML;
-      btn.disabled = true;
-      btn.innerHTML = 'Processing...';
-
-      try {
-        const res = await fetch(`${API_BASE}/api/payments/${id}/approve`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'approved' }) }).then(r => r.json());
-        if (!res.success) return alert(res.error);
-        await loadAdminData();
-      } finally {
-        btn.classList.add('hidden');
-        setTimeout(() => {
-          btn.disabled = false;
-          btn.innerHTML = originalText;
-          btn.classList.remove('hidden');
-        }, 1500);
-      }
-    }
-
-    window.onload = () => {
-      const saved = sessionStorage.getItem('movitec_admin');
-      if (saved) { currentAdmin = JSON.parse(saved); showAdminPortal(); }
-    };
   </script>
 </body>
 </html>
