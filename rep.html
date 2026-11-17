@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Movitec Driving School — Branch Representative Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex flex-col justify-between">
+  <div>
+    <nav class="bg-slate-900 text-white px-4 sm:px-6 py-4 flex justify-between items-center shadow-md">
+      <div>
+        <h1 class="font-bold text-sm sm:text-lg" id="repNavTitle">Branch Representative Portal</h1>
+        <p class="text-[10px] sm:text-xs text-amber-400" id="repBranchName">Select Branch</p>
+      </div>
+      <button id="repLogoutBtn" onclick="repLogout()" class="hidden text-xs bg-slate-800 px-3 py-1.5 rounded">Logout</button>
+    </nav>
+
+    <!-- LOGIN SCREEN -->
+    <div id="repLoginScreen" class="max-w-md mx-auto mt-16 bg-white p-6 sm:p-8 rounded-xl shadow-sm border m-4">
+      <h2 class="text-xl font-bold mb-4 text-center">Representative Login</h2>
+      <form onsubmit="handleRepLogin(event)" class="space-y-4 text-xs">
+        <div>
+          <label class="font-semibold">Select Branch</label>
+          <select required id="repBranchSelect" class="w-full border rounded p-2.5 mt-1 bg-white text-sm">
+            <option value="kiganjo">Kiganjo Branch</option>
+            <option value="thika_cravers">Thika Cravers Branch</option>
+            <option value="makongeni">Makongeni Branch</option>
+            <option value="kimbo">Kimbo Branch</option>
+          </select>
+        </div>
+        <div>
+          <label class="font-semibold">Branch Password (Set by Admin)</label>
+          <input required id="repPassword" type="password" placeholder="••••••••" class="w-full border rounded p-2.5 mt-1 text-sm" />
+        </div>
+        <button type="submit" class="w-full bg-slate-900 text-white font-bold py-3 rounded-lg text-sm">Access Branch Portal</button>
+      </form>
+    </div>
+
+    <!-- DASHBOARD -->
+    <main id="repDashboard" class="hidden max-w-7xl mx-auto p-3 sm:p-6 space-y-6">
+      
+      <!-- Reports & Announcements -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-white p-4 sm:p-5 rounded-xl border shadow-sm space-y-3">
+          <div class="flex flex-wrap justify-between items-center gap-2">
+            <div>
+              <h3 class="font-bold text-sm sm:text-base">Fee & Revenue Report</h3>
+              <p class="text-[10px] text-slate-500">Pick start date for Day, 7-Day Week, or 30-Day Month</p>
+            </div>
+            <div class="flex items-center gap-1">
+              <select id="repPeriodType" onchange="loadRepData()" class="border rounded px-2 py-1 text-xs bg-white font-semibold">
+                <option value="day">Day</option>
+                <option value="week">Week (7 Days)</option>
+                <option value="month">Month (30 Days)</option>
+              </select>
+              <input type="date" id="repReportDate" onchange="loadRepData()" class="border rounded px-2 py-1 text-xs bg-white font-semibold" />
+            </div>
+          </div>
+          <div id="repFinancialSummary" class="space-y-2 text-xs"></div>
+          <div class="border-t pt-2">
+            <p class="text-[11px] font-bold text-slate-700 mb-1">Students Who Paid in Selected Period:</p>
+            <div id="repPayersList" class="space-y-1.5 text-xs max-h-40 overflow-y-auto"></div>
+          </div>
+        </div>
+
+        <div class="bg-white p-4 sm:p-5 rounded-xl border shadow-sm space-y-3">
+          <h3 class="font-bold text-sm sm:text-base">Broadcast Branch Announcement</h3>
+          <form id="announcementForm" onsubmit="sendRepAnnouncement(event)" class="space-y-2.5 text-xs">
+            <input required id="repAnnTitle" placeholder="Announcement Title" class="w-full border rounded p-2" />
+            <textarea required id="repAnnMessage" rows="3" placeholder="Write message to branch students..." class="w-full border rounded p-2"></textarea>
+            <button type="submit" id="repAnnBtn" class="w-full bg-slate-900 text-white font-bold py-2.5 rounded">Broadcast to Branch Students</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Action Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+        
+        <!-- 1. Register Student -->
+        <div class="bg-white p-4 rounded-xl border shadow-sm">
+          <h3 class="font-bold text-sm mb-3 border-b pb-2">1. Register Student</h3>
+          <form id="registerStudentForm" onsubmit="requestPasswordBeforeAction(event, 'register_student')" class="space-y-2 text-xs">
+            <input required id="repStName" placeholder="Full Name *" class="w-full border rounded p-2" />
+            <input id="repStEmail" type="email" placeholder="Email Address" class="w-full border rounded p-2" />
+            <input required id="repStPhone" placeholder="Phone (07...) *" class="w-full border rounded p-2" />
+            <input required id="repStId" placeholder="National ID *" class="w-full border rounded p-2" />
+            <input required id="repStPdl" placeholder="PDL Number *" class="w-full border rounded p-2" />
+            <select required id="repStCourse" onchange="repAutoFillCourse()" class="w-full border rounded p-2 bg-white"></select>
+            <div class="grid grid-cols-2 gap-2">
+              <input required id="repStFee" type="number" placeholder="Fee (KES) *" class="w-full border rounded p-2 font-semibold" />
+              <input required id="repStLessons" type="number" value="24" placeholder="Lessons *" class="w-full border rounded p-2 font-semibold" />
+            </div>
+            <button type="submit" id="btnReg" class="w-full bg-emerald-600 text-white font-bold py-2 rounded">Register Student</button>
+          </form>
+        </div>
+
+        <!-- 2. Record Fee Payment (Cash / Send to School) -->
+        <div class="bg-white p-4 rounded-xl border shadow-sm">
+          <h3 class="font-bold text-sm mb-3 border-b pb-2">2. Record Fee Payment</h3>
+          <form id="paymentForm" onsubmit="requestPasswordBeforeAction(event, 'payment')" class="space-y-2.5 text-xs">
+            <div>
+              <label class="font-semibold text-[10px]">Student Phone Number *</label>
+              <input required id="repPayPhone" oninput="lookupStudentByPhone(this.value, 'payStudentNameIndicator')" placeholder="e.g. 0712345678" class="w-full border rounded p-2 mt-0.5 font-semibold" />
+              <p id="payStudentNameIndicator" class="text-[10px] font-bold text-indigo-700 mt-1">Student Name: (Type phone above)</p>
+            </div>
+            <div>
+              <label class="font-semibold text-[10px]">Amount (KES) *</label>
+              <input required id="repPayAmount" type="text" inputmode="numeric" oninput="validateCleanAmount(this)" placeholder="Amount *" class="w-full border rounded p-2 mt-0.5 font-semibold text-emerald-700" />
+            </div>
+            <input required id="repPayDate" type="date" class="w-full border rounded p-2 bg-white font-semibold" />
+            <select required id="repPayMethod" class="w-full border rounded p-2 bg-white font-semibold">
+              <option value="cash">Cash</option>
+              <option value="send_to_school">Send to School</option>
+            </select>
+            <input required id="repPayRef" placeholder="Receipt # / Reference Code *" class="w-full border rounded p-2" />
+            <button type="submit" id="btnPay" class="w-full bg-slate-900 text-white font-bold py-2 rounded">Save Payment</button>
+          </form>
+        </div>
+
+        <!-- 3. Deduct Student Class -->
+        <div class="bg-white p-4 rounded-xl border shadow-sm">
+          <h3 class="font-bold text-sm mb-3 border-b pb-2">3. Deduct Student Class</h3>
+          <form id="classDeductForm" onsubmit="requestPasswordBeforeAction(event, 'lesson')" class="space-y-2.5 text-xs">
+            <div>
+              <label class="font-semibold text-[10px]">Student Phone Number *</label>
+              <input required id="repClassPhone" oninput="lookupStudentByPhone(this.value, 'classStudentNameIndicator')" placeholder="e.g. 0712345678" class="w-full border rounded p-2 mt-0.5 font-semibold" />
+              <p id="classStudentNameIndicator" class="text-[10px] font-bold text-indigo-700 mt-1">Student Name: (Type phone above)</p>
+            </div>
+            <select required id="repClassType" class="w-full border rounded p-2 bg-white">
+              <option value="practical">Practical Lesson</option>
+              <option value="theory">Theory Class</option>
+            </select>
+            <input required id="repClassRemarks" placeholder="Instructor Remarks / Topic *" class="w-full border rounded p-2" />
+            <button type="submit" id="btnClass" class="w-full bg-amber-500 text-slate-900 font-bold py-2.5 rounded">Deduct 1 Class</button>
+          </form>
+        </div>
+
+        <!-- 4. Book Student Exam -->
+        <div class="bg-white p-4 rounded-xl border shadow-sm">
+          <h3 class="font-bold text-sm mb-3 border-b pb-2">4. Book Student Exam</h3>
+          <form id="examBookingForm" onsubmit="requestPasswordBeforeAction(event, 'book_exam')" class="space-y-2.5 text-xs">
+            <div>
+              <label class="font-semibold text-[10px]">Cleared Student Phone *</label>
+              <input required id="repExamPhone" oninput="lookupStudentByPhone(this.value, 'examStudentNameIndicator')" placeholder="e.g. 0712345678" class="w-full border rounded p-2 mt-0.5 font-semibold" />
+              <p id="examStudentNameIndicator" class="text-[10px] font-bold text-indigo-700 mt-1">Student Name: (Type phone above)</p>
+            </div>
+            <div>
+              <label class="font-semibold text-[10px]">Exam Date *</label>
+              <input required id="repBookExamDate" type="date" class="w-full border rounded p-2 mt-0.5 bg-white font-semibold" />
+            </div>
+            <input required id="repBookExamNotes" placeholder="Exam Center / Notes *" class="w-full border rounded p-2" />
+            <button type="submit" id="btnExam" class="w-full bg-indigo-600 text-white font-bold py-2.5 rounded">Book Exam</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- NEW FEATURE: STUDENTS UNDER REPRESENTATIVE (CLASSES REMAINING, FEES & EXAM STATUS) -->
+      <div class="bg-white p-4 sm:p-5 rounded-xl border shadow-sm space-y-3">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b pb-2">
+          <div>
+            <h3 class="font-bold text-sm sm:text-base">My Branch Students (Classes, Fees & Exam Status)</h3>
+            <p class="text-[11px] text-slate-500" id="repTotalStudentsCount">Total Students: 0</p>
+          </div>
+          <input id="repStudentSearchInput" oninput="renderBranchStudentsDirectory()" placeholder="Search student name or phone..." class="w-full sm:w-64 border rounded px-3 py-1.5 text-xs" />
+        </div>
+        <div class="overflow-x-auto max-h-96 overflow-y-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-50 border-b text-slate-600">
+              <tr>
+                <th class="p-2.5">Student & Phone</th>
+                <th class="p-2.5">Classes Remaining</th>
+                <th class="p-2.5">Fee Summary</th>
+                <th class="p-2.5">Exam Status</th>
+              </tr>
+            </thead>
+            <tbody id="repStudentsDirectoryBody" class="divide-y"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Exam Roster & Smart Sorted Chats -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-white p-4 sm:p-5 rounded-xl border shadow-sm space-y-3">
+          <div class="flex justify-between items-center">
+            <h3 class="font-bold text-sm sm:text-base">Students Booked for Exam</h3>
+            <div class="flex items-center gap-1.5">
+              <label class="text-xs font-semibold">Date:</label>
+              <input type="date" id="examScheduleDateFilter" onchange="loadRepData()" class="border rounded px-2 py-1 text-xs bg-white font-semibold" />
+              <button onclick="document.getElementById('examScheduleDateFilter').value=''; loadRepData();" class="text-[10px] bg-slate-200 px-2 py-1 rounded">All</button>
+            </div>
+          </div>
+          <div id="repExamsList" class="space-y-2 text-xs max-h-72 overflow-y-auto"></div>
+        </div>
+
+        <div class="bg-white rounded-xl border shadow-sm overflow-hidden flex flex-col h-[380px]">
+          <div class="bg-[#075E54] text-white px-4 py-3"><h3 class="font-bold text-sm">Student Chats (Sorted by Recent Activity)</h3></div>
+          <div class="grid grid-cols-3 flex-1 overflow-hidden">
+            <div id="repChatStudentList" class="border-r bg-slate-50 overflow-y-auto p-1.5 space-y-1 text-xs"></div>
+            <div class="col-span-2 flex flex-col bg-[#efeae2] h-full">
+              <div id="repChatHistory" class="flex-1 p-3 overflow-y-auto space-y-2 text-sm"></div>
+              <form onsubmit="sendRepMessage(event)" class="bg-[#f0f2f5] p-2.5 flex gap-2 border-t">
+                <input required id="repMsgInput" placeholder="Reply..." class="flex-1 bg-white rounded-full px-4 py-2 text-sm" />
+                <button type="submit" id="repChatSendBtn" class="bg-[#00a884] text-white font-bold px-4 py-2 rounded-full text-sm">Send</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- BRANCH PIN / PASSWORD MODAL -->
+  <div id="branchAuthModal" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50">
+    <div class="bg-white p-6 rounded-xl max-w-sm w-full space-y-4 text-xs shadow-xl">
+      <h3 class="font-bold text-base text-slate-900 border-b pb-2">Confirm Branch PIN / Password</h3>
+      <p class="text-slate-600">Enter your branch PIN to authorize and save this action.</p>
+      <form onsubmit="executeAuthorizedAction(event)" class="space-y-3">
+        <input required id="confirmBranchPassInput" type="password" placeholder="Enter Branch PIN / Password" class="w-full border rounded p-2.5 font-semibold text-sm" />
+        <div class="flex gap-2">
+          <button type="submit" id="modalVerifyBtn" class="flex-1 bg-slate-900 text-white font-bold py-2.5 rounded text-sm">Verify & Save</button>
+          <button type="button" onclick="closeBranchAuthModal()" class="bg-slate-200 px-4 py-2.5 rounded font-semibold">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer class="text-center py-6 text-xs text-slate-500 border-t bg-white">Powered by StackcraftsStudio</footer>
+
+  <script>
+    const API_BASE = 'http://localhost:5000';
+    let currentRepBranch = null, allEnrollments = [], allExamsList = [], courses = [], allMessages = [], activeChatStudentId = null, paymentsList = [];
+    let pendingAction = null;
+
+    function validateCleanAmount(input) {
+      const val = input.value;
+      if (val.startsWith('-') || val.startsWith('+') || val.includes('-') || val.includes('+')) {
+        input.value = '';
+        alert('Admin is watching on you do what is right');
+        return;
+      }
+      input.value = val.replace(/[^0-9]/g, '');
+    }
+
+    async function handleRepLogin(e) {
+      e.preventDefault();
+      const branch_id = document.getElementById('repBranchSelect').value;
+      const password = document.getElementById('repPassword').value;
+      const res = await fetch(`${API_BASE}/api/representative/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ branch_id, password })
+      }).then(r => r.json());
+      if (!res.success) return alert(res.error);
+      currentRepBranch = res.branch;
+
+      const meta = await fetch(`${API_BASE}/api/meta`).then(r => r.json());
+      courses = meta.courses || [];
+      document.getElementById('repStCourse').innerHTML = courses.map(c => `<option value="${c.id}" data-fee="${c.total_fee}" data-lessons="${c.total_lessons || 24}">${c.name} (KES ${c.total_fee})</option>`).join('');
+      repAutoFillCourse();
+
+      const todayStr = new Date().toISOString().split('T')[0];
+      document.getElementById('repReportDate').value = todayStr;
+      document.getElementById('repPayDate').value = todayStr;
+      document.getElementById('repBookExamDate').value = todayStr;
+
+      document.getElementById('repLoginScreen').classList.add('hidden');
+      document.getElementById('repDashboard').classList.remove('hidden');
+      document.getElementById('repLogoutBtn').classList.remove('hidden');
+      document.getElementById('repBranchName').textContent = currentRepBranch.name;
+      loadRepData();
+      setInterval(loadRepData, 5000);
+    }
+
+    function repAutoFillCourse() {
+      const sel = document.getElementById('repStCourse');
+      const opt = sel.options[sel.selectedIndex];
+      if (opt) {
+        document.getElementById('repStFee').value = opt.dataset.fee;
+        document.getElementById('repStLessons').value = opt.dataset.lessons;
+      }
+    }
+
+    function repLogout() { location.reload(); }
+
+    function lookupStudentByPhone(phone, indicatorId) {
+      const q = (phone || '').trim().toLowerCase();
+      const indicator = document.getElementById(indicatorId);
+      if (q.length < 3) {
+        indicator.textContent = 'Student Name: (Type phone above)';
+        indicator.className = 'text-[10px] font-bold text-indigo-700 mt-1';
+        return;
+      }
+      const found = allEnrollments.find(e => e.profiles.phone.toLowerCase().includes(q));
+      if (found) {
+        const bal = Math.max(0, Number(found.agreed_fee) - Number(found.amount_paid));
+        indicator.textContent = `Student Name: ${found.profiles.full_name} (Bal: KES ${bal})`;
+        indicator.className = 'text-[10px] font-bold text-emerald-700 mt-1';
+      } else {
+        indicator.textContent = 'Student Name: Not found in branch';
+        indicator.className = 'text-[10px] font-bold text-rose-600 mt-1';
+      }
+    }
+
+    function requestPasswordBeforeAction(e, actionType) {
+      if (e) e.preventDefault();
+
+      if (actionType === 'payment') {
+        const amtVal = document.getElementById('repPayAmount').value.trim();
+        if (amtVal.startsWith('-') || amtVal.startsWith('+') || Number(amtVal) <= 0 || isNaN(Number(amtVal))) {
+          document.getElementById('repPayAmount').value = '';
+          alert('Admin is watching on you do what is right');
+          return;
+        }
+      }
+
+      pendingAction = { type: actionType };
+      document.getElementById('confirmBranchPassInput').value = '';
+      document.getElementById('branchAuthModal').classList.remove('hidden');
+      document.getElementById('confirmBranchPassInput').focus();
+    }
+
+    function closeBranchAuthModal() {
+      pendingAction = null;
+      document.getElementById('branchAuthModal').classList.add('hidden');
+    }
+
+    async function executeAuthorizedAction(e) {
+      e.preventDefault();
+      const modalBtn = document.getElementById('modalVerifyBtn');
+      modalBtn.disabled = true;
+      modalBtn.textContent = 'Processing...';
+
+      const password = document.getElementById('confirmBranchPassInput').value;
+      const authRes = await fetch(`${API_BASE}/api/representative/verify-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ branch_id: currentRepBranch.id, password })
+      }).then(r => r.json());
+
+      if (!authRes.success) {
+        modalBtn.disabled = false;
+        modalBtn.textContent = 'Verify & Save';
+        return alert(authRes.error || 'Incorrect branch PIN / password.');
+      }
+
+      const actionType = pendingAction.type;
+      closeBranchAuthModal();
+      modalBtn.disabled = false;
+      modalBtn.textContent = 'Verify & Save';
+
+      if (actionType === 'register_student') await commitRegisterStudent();
+      else if (actionType === 'payment') await commitPayment();
+      else if (actionType === 'lesson') await commitDeductClass();
+      else if (actionType === 'book_exam') await commitBookExam();
+      else if (actionType === 'update_exam') await commitUpdateExam(pendingAction.id, pendingAction.status);
+    }
+
+    function renderBranchStudentsDirectory() {
+      const q = (document.getElementById('repStudentSearchInput')?.value || '').toLowerCase().trim();
+      const filtered = allEnrollments.filter(e => {
+        if (!q) return true;
+        return (e.profiles?.full_name || '').toLowerCase().includes(q) || (e.profiles?.phone || '').toLowerCase().includes(q);
+      });
+
+      document.getElementById('repTotalStudentsCount').textContent = `Total Students: ${filtered.length}`;
+
+      document.getElementById('repStudentsDirectoryBody').innerHTML = filtered.map(e => {
+        const balance = Math.max(0, Number(e.agreed_fee) - Number(e.amount_paid));
+        const stExams = allExamsList.filter(ex => ex.student_id === e.student_id);
+        const latestExam = stExams.length > 0 ? stExams[0] : null;
+
+        let examBadge = `<span class="text-[10px] text-slate-400 font-semibold">Not Booked</span>`;
+        if (latestExam) {
+          const badgeColors = {
+            passed: 'bg-emerald-100 text-emerald-800',
+            failed: 'bg-rose-100 text-rose-800',
+            approved: 'bg-indigo-100 text-indigo-800',
+            pending: 'bg-amber-100 text-amber-800'
+          };
+          const colorCls = badgeColors[latestExam.status] || 'bg-slate-100 text-slate-800';
+          examBadge = `
+            <span class="px-2 py-0.5 rounded font-bold uppercase text-[10px] ${colorCls}">
+              ${latestExam.status} (${latestExam.preferred_date})
+            </span>
+          `;
+        }
+
+        const lessonsDisplay = Number(e.remaining_lessons) === 0
+          ? `<span class="text-emerald-700 font-bold">DONE (0 / ${e.total_lessons})</span>`
+          : `<span class="font-bold text-amber-700">${e.remaining_lessons}</span> <span class="text-slate-400">/ ${e.total_lessons} left</span>`;
+
+        return `
+          <tr class="hover:bg-slate-50">
+            <td class="p-2.5">
+              <p class="font-bold text-slate-900">${e.profiles?.full_name}</p>
+              <p class="text-[10px] text-slate-500">${e.profiles?.phone} • PDL: ${e.profiles?.pdl_number || 'N/A'}</p>
+            </td>
+            <td class="p-2.5">${lessonsDisplay}</td>
+            <td class="p-2.5">
+              <p class="text-[11px]">Fee: <b>KES ${e.agreed_fee}</b> • Paid: <span class="text-emerald-700 font-bold">KES ${e.amount_paid}</span></p>
+              <p class="text-[10px] ${balance === 0 ? 'text-emerald-600 font-bold' : 'text-rose-600 font-bold'}">
+                ${balance === 0 ? 'CLEARED (KES 0)' : `Balance: KES ${balance}`}
+              </p>
+            </td>
+            <td class="p-2.5">${examBadge}</td>
+          </tr>
+        `;
+      }).join('') || '<tr><td colspan="4" class="text-center p-4 text-slate-400">No students found in this branch.</td></tr>';
+    }
+
+    async function loadRepData() {
+      if (!currentRepBranch) return;
+      const [exams, enrollments, messages, payments] = await Promise.all([
+        fetch(`${API_BASE}/api/exams`).then(r => r.json()),
+        fetch(`${API_BASE}/api/enrollments`).then(r => r.json()),
+        fetch(`${API_BASE}/api/messages`).then(r => r.json()),
+        fetch(`${API_BASE}/api/payments`).then(r => r.json())
+      ]);
+
+      allEnrollments = (enrollments || []).filter(e => e.profiles?.branch === currentRepBranch.id);
+      allExamsList = Array.isArray(exams) ? exams : [];
+      paymentsList = Array.isArray(payments) ? payments : [];
+      const studentIds = new Set(allEnrollments.map(e => e.profiles?.id));
+
+      renderBranchStudentsDirectory();
+
+      const periodType = document.getElementById('repPeriodType').value;
+      const refDateStr = document.getElementById('repReportDate').value;
+      const startDate = refDateStr ? new Date(refDateStr + 'T00:00:00') : new Date();
+      startDate.setHours(0, 0, 0, 0);
+
+      const endDate = new Date(startDate);
+      if (periodType === 'day') {
+        endDate.setHours(23, 59, 59, 999);
+      } else if (periodType === 'week') {
+        endDate.setDate(startDate.getDate() + 6);
+        endDate.setHours(23, 59, 59, 999);
+      } else if (periodType === 'month') {
+        endDate.setDate(startDate.getDate() + 29);
+        endDate.setHours(23, 59, 59, 999);
+      }
+
+      let periodCollected = 0;
+      let totalBranchPaid = 0;
+      let totalBranchRequired = 0;
+
+      allEnrollments.forEach(e => {
+        totalBranchRequired += Number(e.agreed_fee);
+        totalBranchPaid += Number(e.amount_paid);
+      });
+
+      const periodPayments = paymentsList.filter(p => {
+        if (p.status !== 'approved' || !studentIds.has(p.student_id) || !p.paid_at) return false;
+        const pDate = new Date(p.paid_at);
+        return pDate >= startDate && pDate <= endDate;
+      });
+
+      periodPayments.forEach(p => { periodCollected += Number(p.amount); });
+
+      document.getElementById('repFinancialSummary').innerHTML = `
+        <div class="p-2.5 rounded bg-slate-50 border grid grid-cols-3 gap-2 text-center">
+          <div><p class="text-[10px] text-slate-500">Total Required</p><p class="font-bold">KES ${totalBranchRequired}</p></div>
+          <div><p class="text-[10px] text-slate-500">All-Time Paid</p><p class="font-bold text-emerald-700">KES ${totalBranchPaid}</p></div>
+          <div><p class="text-[10px] text-slate-500">Collected (${periodType.toUpperCase()})</p><p class="font-bold text-amber-700">KES ${periodCollected}</p></div>
+        </div>
+      `;
+
+      document.getElementById('repPayersList').innerHTML = periodPayments.map(p => {
+        const dt = new Date(p.paid_at).toLocaleString('en-KE', { dateStyle: 'medium', timeStyle: 'short' });
+        const mLabel = p.payment_method === 'cash' ? 'Cash' : 'Send to School';
+        return `
+          <div class="p-2 border rounded bg-emerald-50/50 flex justify-between items-center">
+            <div>
+              <p class="font-bold text-slate-900">${p.student?.full_name} <span class="font-normal text-slate-500">(${p.student?.phone})</span></p>
+              <p class="text-[10px] text-slate-500">${dt} • ${mLabel}</p>
+            </div>
+            <span class="font-bold text-emerald-700">KES ${p.amount}</span>
+          </div>
+        `;
+      }).join('') || '<p class="text-slate-400 text-[11px]">No payments recorded in this date range.</p>';
+
+      const examDateFilter = document.getElementById('examScheduleDateFilter').value;
+      const repExams = allExamsList.filter(ex => {
+        if (!studentIds.has(ex.student_id)) return false;
+        if (examDateFilter && ex.preferred_date !== examDateFilter) return false;
+        return true;
+      });
+
+      document.getElementById('repExamsList').innerHTML = repExams.map(ex => `
+        <div class="p-2.5 border rounded bg-indigo-50/60 flex justify-between items-center">
+          <div>
+            <p class="font-bold text-slate-900">${ex.student?.full_name} (${ex.student?.phone})</p>
+            <p class="text-[10px] text-slate-600">Exam Date: <b>${ex.preferred_date}</b> • Status: <span class="uppercase font-bold text-indigo-800">${ex.status}</span></p>
+          </div>
+          ${(ex.status === 'pending' || ex.status === 'approved') ? `
+            <div class="flex gap-1">
+              <button onclick="pendingAction={type:'update_exam', id:'${ex.id}', status:'passed'}; requestPasswordBeforeAction(null, 'update_exam')" class="bg-emerald-600 text-white px-2 py-1 rounded font-bold">Pass</button>
+              <button onclick="pendingAction={type:'update_exam', id:'${ex.id}', status:'failed'}; requestPasswordBeforeAction(null, 'update_exam')" class="bg-rose-600 text-white px-2 py-1 rounded font-bold">Fail</button>
+            </div>
+          ` : `<span class="px-2 py-0.5 rounded font-bold uppercase text-[10px] ${ex.status === 'passed' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">${ex.status}</span>`}
+        </div>
+      `).join('') || '<p class="text-slate-400">No students booked for exam on selected date.</p>';
+
+      allMessages = (messages || []).filter(m => studentIds.has(m.student_id));
+      renderRepChatSidebar();
+    }
+
+    function renderRepChatSidebar() {
+      const studentMap = new Map();
+      allEnrollments.forEach(e => {
+        studentMap.set(e.student_id, { student_id: e.student_id, full_name: e.profiles.full_name, phone: e.profiles.phone, lastMsgTime: '1970-01-01', unread: false });
+      });
+
+      allMessages.forEach(m => {
+        if (studentMap.has(m.student_id)) {
+          const item = studentMap.get(m.student_id);
+          if (new Date(m.created_at) > new Date(item.lastMsgTime)) {
+            item.lastMsgTime = m.created_at;
+            if (m.sender_role === 'student') item.unread = true;
+          }
+        }
+      });
+
+      const sortedChats = Array.from(studentMap.values()).sort((a,b) => new Date(b.lastMsgTime) - new Date(a.lastMsgTime));
+
+      if (!activeChatStudentId && sortedChats.length > 0) {
+        activeChatStudentId = sortedChats[0].student_id;
+      }
+
+      document.getElementById('repChatStudentList').innerHTML = sortedChats.map(item => {
+        const isActive = item.student_id === activeChatStudentId;
+        return `
+          <div onclick="activeChatStudentId = '${item.student_id}'; renderRepChatSidebar();" class="p-2 rounded cursor-pointer border transition ${isActive ? 'bg-indigo-50 border-indigo-300 font-bold' : 'bg-white hover:bg-slate-100'}">
+            <div class="flex justify-between items-center">
+              <p class="truncate">${item.full_name}</p>
+              ${item.unread ? '<span class="bg-rose-600 text-white text-[9px] px-1.5 py-0.5 rounded-full font-bold">New</span>' : ''}
+            </div>
+            <p class="text-[9px] text-slate-500">${item.phone}</p>
+          </div>
+        `;
+      }).join('') || '<p class="text-xs text-slate-400 p-2">No students.</p>';
+
+      renderActiveRepChat();
+    }
+
+    function renderActiveRepChat() {
+      const container = document.getElementById('repChatHistory');
+      if (!activeChatStudentId) {
+        container.innerHTML = '<p class="text-center text-xs text-slate-400">Select a student to chat</p>';
+        return;
+      }
+      const thread = allMessages.filter(m => m.student_id === activeChatStudentId);
+      container.innerHTML = thread.map(m => {
+        const isRepOrAdmin = m.sender_role === 'representative' || m.sender_role === 'admin';
+        return `
+          <div class="flex ${isRepOrAdmin ? 'justify-end' : 'justify-start'}">
+            <div class="max-w-[80%] px-3 py-1.5 rounded bg-white shadow-sm">
+              <p class="text-[9px] font-bold text-amber-700">${m.sender_name}</p>
+              <p class="text-xs">${m.message}</p>
+              <p class="text-[8px] text-slate-400 text-right mt-0.5">${new Date(m.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
+            </div>
+          </div>
+        `;
+      }).join('') || '<p class="text-center text-xs text-slate-400">No messages yet.</p>';
+      container.scrollTop = container.scrollHeight;
+    }
+
+    async function commitRegisterStudent() {
+      const btn = document.getElementById('btnReg');
+      btn.disabled = true;
+      btn.textContent = 'Processing...';
+
+      const payload = {
+        full_name: document.getElementById('repStName').value,
+        email: document.getElementById('repStEmail').value,
+        phone: document.getElementById('repStPhone').value,
+        id_number: document.getElementById('repStId').value,
+        pdl_number: document.getElementById('repStPdl').value,
+        branch: currentRepBranch.id,
+        course_id: document.getElementById('repStCourse').value,
+        agreed_fee: Number(document.getElementById('repStFee').value),
+        total_lessons: Number(document.getElementById('repStLessons').value)
+      };
+      const res = await fetch(`${API_BASE}/api/students`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      }).then(r => r.json());
+      
+      btn.disabled = false;
+      btn.textContent = 'Register Student';
+
+      if (!res.success) return alert(res.error);
+      document.getElementById('registerStudentForm').reset();
+      repAutoFillCourse();
+      alert('Student registered successfully in ' + currentRepBranch.name + '!');
+      loadRepData();
+    }
+
+    async function commitPayment() {
+      const btn = document.getElementById('btnPay');
+      btn.disabled = true;
+      btn.textContent = 'Processing...';
+
+      const payload = {
+        phone: document.getElementById('repPayPhone').value,
+        amount: document.getElementById('repPayAmount').value,
+        paid_date: document.getElementById('repPayDate').value,
+        payment_method: document.getElementById('repPayMethod').value,
+        reference_code: document.getElementById('repPayRef').value
+      };
+      const res = await fetch(`${API_BASE}/api/representative/payments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      }).then(r => r.json());
+
+      btn.disabled = false;
+      btn.textContent = 'Save Payment';
+
+      if (!res.success) return alert(res.error);
+      document.getElementById('paymentForm').reset();
+      document.getElementById('repPayDate').value = new Date().toISOString().split('T')[0];
+      document.getElementById('payStudentNameIndicator').textContent = 'Student Name: (Type phone above)';
+      document.getElementById('payStudentNameIndicator').className = 'text-[10px] font-bold text-indigo-700 mt-1';
+      alert(`Payment recorded successfully for ${res.student_name}!`);
+      loadRepData();
+    }
+
+    async function commitDeductClass() {
+      const btn = document.getElementById('btnClass');
+      btn.disabled = true;
+      btn.textContent = 'Processing...';
+
+      const payload = {
+        phone: document.getElementById('repClassPhone').value,
+        lesson_type: document.getElementById('repClassType').value,
+        remarks: document.getElementById('repClassRemarks').value
+      };
+      const res = await fetch(`${API_BASE}/api/representative/lessons`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      }).then(r => r.json());
+
+      btn.disabled = false;
+      btn.textContent = 'Deduct 1 Class';
+
+      if (!res.success) return alert(res.error);
+      document.getElementById('classDeductForm').reset();
+      document.getElementById('classStudentNameIndicator').textContent = 'Student Name: (Type phone above)';
+      document.getElementById('classStudentNameIndicator').className = 'text-[10px] font-bold text-indigo-700 mt-1';
+      alert(`Class deducted successfully for ${res.student_name}!`);
+      loadRepData();
+    }
+
+    async function commitBookExam() {
+      const btn = document.getElementById('btnExam');
+      btn.disabled = true;
+      btn.textContent = 'Processing...';
+
+      const payload = {
+        phone: document.getElementById('repExamPhone').value,
+        preferred_date: document.getElementById('repBookExamDate').value,
+        notes: document.getElementById('repBookExamNotes').value,
+        booked_by_rep: true
+      };
+      const res = await fetch(`${API_BASE}/api/exams`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      }).then(r => r.json());
+
+      btn.disabled = false;
+      btn.textContent = 'Book Exam';
+
+      if (!res.success) return alert(res.error);
+      document.getElementById('examBookingForm').reset();
+      document.getElementById('repBookExamDate').value = new Date().toISOString().split('T')[0];
+      document.getElementById('examStudentNameIndicator').textContent = 'Student Name: (Type phone above)';
+      document.getElementById('examStudentNameIndicator').className = 'text-[10px] font-bold text-indigo-700 mt-1';
+      alert('Exam booked successfully!');
+      loadRepData();
+    }
+
+    async function commitUpdateExam(id, status) {
+      await fetch(`${API_BASE}/api/exams/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status })
+      });
+      loadRepData();
+    }
+
+    async function sendRepAnnouncement(e) {
+      e.preventDefault();
+      const btn = document.getElementById('repAnnBtn');
+      btn.disabled = true;
+      btn.textContent = 'Processing...';
+
+      const title = document.getElementById('repAnnTitle').value;
+      const message = document.getElementById('repAnnMessage').value;
+      const student_ids = allEnrollments.map(e => e.student_id);
+      if (student_ids.length === 0) {
+        btn.disabled = false;
+        btn.textContent = 'Broadcast to Branch Students';
+        return alert('No students in branch.');
+      }
+
+      const res = await fetch(`${API_BASE}/api/announcements`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ target: 'STUDENTS', student_ids, title, message, admin_name: `${currentRepBranch.name} Rep` })
+      }).then(r => r.json());
+      
+      btn.disabled = false;
+      btn.textContent = 'Broadcast to Branch Students';
+
+      if (res.success) { 
+        document.getElementById('announcementForm').reset();
+        alert('Branch announcement broadcasted!'); 
+      }
+    }
+
+    async function sendRepMessage(e) {
+      e.preventDefault();
+      if (!activeChatStudentId) return;
+      const btn = document.getElementById('repChatSendBtn');
+      btn.disabled = true;
+      btn.textContent = '...';
+
+      const message = document.getElementById('repMsgInput').value;
+      await fetch(`${API_BASE}/api/messages`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ student_id: activeChatStudentId, sender_role: 'representative', sender_name: `${currentRepBranch.name} Rep`, message })
+      });
+      document.getElementById('repMsgInput').value = '';
+      btn.disabled = false;
+      btn.textContent = 'Send';
+      loadRepData();
+    }
+  </script>
+</body>
+</html>
