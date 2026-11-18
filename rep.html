@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -75,7 +76,7 @@
       </div>
 
       <!-- Action Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         
         <!-- 1. Register Student -->
         <div class="bg-white p-4 rounded-xl border shadow-sm">
@@ -95,25 +96,22 @@
           </form>
         </div>
 
-        <!-- 2. Record Fee Payment (Cash / Send to School) -->
+        <!-- 2. Record Fee Payment -->
         <div class="bg-white p-4 rounded-xl border shadow-sm">
           <h3 class="font-bold text-sm mb-3 border-b pb-2">2. Record Fee Payment</h3>
-          <form id="paymentForm" onsubmit="requestPasswordBeforeAction(event, 'payment')" class="space-y-2.5 text-xs">
+          <form id="paymentForm" onsubmit="requestPasswordBeforeAction(event, 'payment')" class="space-y-2 text-xs">
             <div>
               <label class="font-semibold text-[10px]">Student Phone Number *</label>
               <input required id="repPayPhone" oninput="lookupStudentByPhone(this.value, 'payStudentNameIndicator')" placeholder="e.g. 0712345678" class="w-full border rounded p-2 mt-0.5 font-semibold" />
-              <p id="payStudentNameIndicator" class="text-[10px] font-bold text-indigo-700 mt-1">Student Name: (Type phone above)</p>
+              <p id="payStudentNameIndicator" class="text-[10px] font-bold text-indigo-700 mt-1">Student: (Type phone)</p>
             </div>
-            <div>
-              <label class="font-semibold text-[10px]">Amount (KES) *</label>
-              <input required id="repPayAmount" type="text" inputmode="numeric" oninput="validateCleanAmount(this)" placeholder="Amount *" class="w-full border rounded p-2 mt-0.5 font-semibold text-emerald-700" />
-            </div>
+            <input required id="repPayAmount" type="text" inputmode="numeric" oninput="validateCleanAmount(this)" placeholder="Amount (KES) *" class="w-full border rounded p-2 font-semibold text-emerald-700" />
             <input required id="repPayDate" type="date" class="w-full border rounded p-2 bg-white font-semibold" />
             <select required id="repPayMethod" class="w-full border rounded p-2 bg-white font-semibold">
               <option value="cash">Cash</option>
               <option value="send_to_school">Send to School</option>
             </select>
-            <input required id="repPayRef" placeholder="Receipt # / Reference Code *" class="w-full border rounded p-2" />
+            <input required id="repPayRef" placeholder="Receipt # / Reference *" class="w-full border rounded p-2" />
             <button type="submit" id="btnPay" class="w-full bg-slate-900 text-white font-bold py-2 rounded">Save Payment</button>
           </form>
         </div>
@@ -125,13 +123,13 @@
             <div>
               <label class="font-semibold text-[10px]">Student Phone Number *</label>
               <input required id="repClassPhone" oninput="lookupStudentByPhone(this.value, 'classStudentNameIndicator')" placeholder="e.g. 0712345678" class="w-full border rounded p-2 mt-0.5 font-semibold" />
-              <p id="classStudentNameIndicator" class="text-[10px] font-bold text-indigo-700 mt-1">Student Name: (Type phone above)</p>
+              <p id="classStudentNameIndicator" class="text-[10px] font-bold text-indigo-700 mt-1">Student: (Type phone)</p>
             </div>
             <select required id="repClassType" class="w-full border rounded p-2 bg-white">
               <option value="practical">Practical Lesson</option>
               <option value="theory">Theory Class</option>
             </select>
-            <input required id="repClassRemarks" placeholder="Instructor Remarks / Topic *" class="w-full border rounded p-2" />
+            <input required id="repClassRemarks" placeholder="Instructor Remarks *" class="w-full border rounded p-2" />
             <button type="submit" id="btnClass" class="w-full bg-amber-500 text-slate-900 font-bold py-2.5 rounded">Deduct 1 Class</button>
           </form>
         </div>
@@ -143,7 +141,7 @@
             <div>
               <label class="font-semibold text-[10px]">Cleared Student Phone *</label>
               <input required id="repExamPhone" oninput="lookupStudentByPhone(this.value, 'examStudentNameIndicator')" placeholder="e.g. 0712345678" class="w-full border rounded p-2 mt-0.5 font-semibold" />
-              <p id="examStudentNameIndicator" class="text-[10px] font-bold text-indigo-700 mt-1">Student Name: (Type phone above)</p>
+              <p id="examStudentNameIndicator" class="text-[10px] font-bold text-indigo-700 mt-1">Student: (Type phone)</p>
             </div>
             <div>
               <label class="font-semibold text-[10px]">Exam Date *</label>
@@ -153,13 +151,31 @@
             <button type="submit" id="btnExam" class="w-full bg-indigo-600 text-white font-bold py-2.5 rounded">Book Exam</button>
           </form>
         </div>
+
+        <!-- 5. Reschedule / Assign Another Course -->
+        <div class="bg-white p-4 rounded-xl border shadow-sm">
+          <h3 class="font-bold text-sm mb-3 border-b pb-2">5. Reschedule New Course</h3>
+          <form id="rescheduleCourseForm" onsubmit="requestPasswordBeforeAction(event, 'reschedule_course')" class="space-y-2 text-xs">
+            <div>
+              <label class="font-semibold text-[10px]">Student Phone Number *</label>
+              <input required id="repReschedPhone" oninput="lookupStudentByPhone(this.value, 'reschedStudentIndicator')" placeholder="e.g. 0712345678" class="w-full border rounded p-2 mt-0.5 font-semibold" />
+              <p id="reschedStudentIndicator" class="text-[10px] font-bold text-indigo-700 mt-1">Student: (Type phone)</p>
+            </div>
+            <select required id="repReschedCourse" onchange="repAutoFillReschedCourse()" class="w-full border rounded p-2 bg-white"></select>
+            <div class="grid grid-cols-2 gap-1.5">
+              <input required id="repReschedFee" type="number" placeholder="Fee (KES)" class="w-full border rounded p-2 font-semibold" />
+              <input required id="repReschedLessons" type="number" value="24" placeholder="Classes" class="w-full border rounded p-2 font-semibold" />
+            </div>
+            <button type="submit" id="btnReschedCourse" class="w-full bg-purple-700 text-white font-bold py-2.5 rounded">Assign New Course</button>
+          </form>
+        </div>
       </div>
 
-      <!-- NEW FEATURE: STUDENTS UNDER REPRESENTATIVE (CLASSES REMAINING, FEES & EXAM STATUS) -->
+      <!-- STUDENTS UNDER REPRESENTATIVE (SHOWING COURSE, CLASSES REMAINING, FEES & EXAM STATUS) -->
       <div class="bg-white p-4 sm:p-5 rounded-xl border shadow-sm space-y-3">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b pb-2">
           <div>
-            <h3 class="font-bold text-sm sm:text-base">My Branch Students (Classes, Fees & Exam Status)</h3>
+            <h3 class="font-bold text-sm sm:text-base">My Branch Students (Course, Classes, Fees & Exam Status)</h3>
             <p class="text-[11px] text-slate-500" id="repTotalStudentsCount">Total Students: 0</p>
           </div>
           <input id="repStudentSearchInput" oninput="renderBranchStudentsDirectory()" placeholder="Search student name or phone..." class="w-full sm:w-64 border rounded px-3 py-1.5 text-xs" />
@@ -169,6 +185,7 @@
             <thead class="bg-slate-50 border-b text-slate-600">
               <tr>
                 <th class="p-2.5">Student & Phone</th>
+                <th class="p-2.5">Course Studying</th>
                 <th class="p-2.5">Classes Remaining</th>
                 <th class="p-2.5">Fee Summary</th>
                 <th class="p-2.5">Exam Status</th>
@@ -183,7 +200,7 @@
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div class="bg-white p-4 sm:p-5 rounded-xl border shadow-sm space-y-3">
           <div class="flex justify-between items-center">
-            <h3 class="font-bold text-sm sm:text-base">Students Booked for Exam</h3>
+            <h3 class="font-bold text-sm sm:text-base">Students Booked for Exam (Grant Pass / Fail)</h3>
             <div class="flex items-center gap-1.5">
               <label class="text-xs font-semibold">Date:</label>
               <input type="date" id="examScheduleDateFilter" onchange="loadRepData()" class="border rounded px-2 py-1 text-xs bg-white font-semibold" />
@@ -228,7 +245,7 @@
   <footer class="text-center py-6 text-xs text-slate-500 border-t bg-white">Powered by StackcraftsStudio</footer>
 
   <script>
-    const API_BASE = 'https://driving-swa8.onrender.com';
+    const API_BASE = 'http://localhost:5000';
     let currentRepBranch = null, allEnrollments = [], allExamsList = [], courses = [], allMessages = [], activeChatStudentId = null, paymentsList = [];
     let pendingAction = null;
 
@@ -256,8 +273,11 @@
 
       const meta = await fetch(`${API_BASE}/api/meta`).then(r => r.json());
       courses = meta.courses || [];
-      document.getElementById('repStCourse').innerHTML = courses.map(c => `<option value="${c.id}" data-fee="${c.total_fee}" data-lessons="${c.total_lessons || 24}">${c.name} (KES ${c.total_fee})</option>`).join('');
+      const courseOpts = courses.map(c => `<option value="${c.id}" data-fee="${c.total_fee}" data-lessons="${c.total_lessons || 24}">${c.name} (KES ${c.total_fee})</option>`).join('');
+      document.getElementById('repStCourse').innerHTML = courseOpts;
+      document.getElementById('repReschedCourse').innerHTML = courseOpts;
       repAutoFillCourse();
+      repAutoFillReschedCourse();
 
       const todayStr = new Date().toISOString().split('T')[0];
       document.getElementById('repReportDate').value = todayStr;
@@ -281,25 +301,42 @@
       }
     }
 
+    function repAutoFillReschedCourse() {
+      const sel = document.getElementById('repReschedCourse');
+      const opt = sel.options[sel.selectedIndex];
+      if (opt) {
+        document.getElementById('repReschedFee').value = opt.dataset.fee;
+        document.getElementById('repReschedLessons').value = opt.dataset.lessons;
+      }
+    }
+
     function repLogout() { location.reload(); }
 
     function lookupStudentByPhone(phone, indicatorId) {
       const q = (phone || '').trim().toLowerCase();
       const indicator = document.getElementById(indicatorId);
       if (q.length < 3) {
-        indicator.textContent = 'Student Name: (Type phone above)';
+        indicator.textContent = 'Student: (Type phone)';
         indicator.className = 'text-[10px] font-bold text-indigo-700 mt-1';
         return;
       }
       const found = allEnrollments.find(e => e.profiles.phone.toLowerCase().includes(q));
       if (found) {
         const bal = Math.max(0, Number(found.agreed_fee) - Number(found.amount_paid));
-        indicator.textContent = `Student Name: ${found.profiles.full_name} (Bal: KES ${bal})`;
+        const courseName = found.courses?.name || 'Course';
+        indicator.textContent = `${found.profiles.full_name} • ${courseName} (Bal: KES ${bal})`;
         indicator.className = 'text-[10px] font-bold text-emerald-700 mt-1';
       } else {
-        indicator.textContent = 'Student Name: Not found in branch';
+        indicator.textContent = 'Student: Not found in branch';
         indicator.className = 'text-[10px] font-bold text-rose-600 mt-1';
       }
+    }
+
+    function triggerExamStatusUpdate(examId, newStatus) {
+      pendingAction = { type: 'update_exam', id: examId, status: newStatus };
+      document.getElementById('confirmBranchPassInput').value = '';
+      document.getElementById('branchAuthModal').classList.remove('hidden');
+      document.getElementById('confirmBranchPassInput').focus();
     }
 
     function requestPasswordBeforeAction(e, actionType) {
@@ -327,6 +364,8 @@
 
     async function executeAuthorizedAction(e) {
       e.preventDefault();
+      if (!pendingAction) return;
+
       const modalBtn = document.getElementById('modalVerifyBtn');
       modalBtn.disabled = true;
       modalBtn.textContent = 'Processing...';
@@ -344,16 +383,17 @@
         return alert(authRes.error || 'Incorrect branch PIN / password.');
       }
 
-      const actionType = pendingAction.type;
+      const currentAction = { ...pendingAction };
       closeBranchAuthModal();
       modalBtn.disabled = false;
       modalBtn.textContent = 'Verify & Save';
 
-      if (actionType === 'register_student') await commitRegisterStudent();
-      else if (actionType === 'payment') await commitPayment();
-      else if (actionType === 'lesson') await commitDeductClass();
-      else if (actionType === 'book_exam') await commitBookExam();
-      else if (actionType === 'update_exam') await commitUpdateExam(pendingAction.id, pendingAction.status);
+      if (currentAction.type === 'register_student') await commitRegisterStudent();
+      else if (currentAction.type === 'payment') await commitPayment();
+      else if (currentAction.type === 'lesson') await commitDeductClass();
+      else if (currentAction.type === 'book_exam') await commitBookExam();
+      else if (currentAction.type === 'reschedule_course') await commitRescheduleCourse();
+      else if (currentAction.type === 'update_exam') await commitUpdateExam(currentAction.id, currentAction.status);
     }
 
     function renderBranchStudentsDirectory() {
@@ -369,6 +409,7 @@
         const balance = Math.max(0, Number(e.agreed_fee) - Number(e.amount_paid));
         const stExams = allExamsList.filter(ex => ex.student_id === e.student_id);
         const latestExam = stExams.length > 0 ? stExams[0] : null;
+        const courseTitle = e.courses?.name || 'General Driving Course';
 
         let examBadge = `<span class="text-[10px] text-slate-400 font-semibold">Not Booked</span>`;
         if (latestExam) {
@@ -396,6 +437,7 @@
               <p class="font-bold text-slate-900">${e.profiles?.full_name}</p>
               <p class="text-[10px] text-slate-500">${e.profiles?.phone} • PDL: ${e.profiles?.pdl_number || 'N/A'}</p>
             </td>
+            <td class="p-2.5 font-semibold text-indigo-800">${courseTitle}</td>
             <td class="p-2.5">${lessonsDisplay}</td>
             <td class="p-2.5">
               <p class="text-[11px]">Fee: <b>KES ${e.agreed_fee}</b> • Paid: <span class="text-emerald-700 font-bold">KES ${e.amount_paid}</span></p>
@@ -406,7 +448,7 @@
             <td class="p-2.5">${examBadge}</td>
           </tr>
         `;
-      }).join('') || '<tr><td colspan="4" class="text-center p-4 text-slate-400">No students found in this branch.</td></tr>';
+      }).join('') || '<tr><td colspan="5" class="text-center p-4 text-slate-400">No students found in this branch.</td></tr>';
     }
 
     async function loadRepData() {
@@ -488,15 +530,16 @@
       });
 
       document.getElementById('repExamsList').innerHTML = repExams.map(ex => `
-        <div class="p-2.5 border rounded bg-indigo-50/60 flex justify-between items-center">
+        <div class="p-2.5 border rounded bg-indigo-50/60 flex justify-between items-center gap-2">
           <div>
             <p class="font-bold text-slate-900">${ex.student?.full_name} (${ex.student?.phone})</p>
+            <p class="text-[10px] text-indigo-700 font-semibold">Course: ${ex.course_name}</p>
             <p class="text-[10px] text-slate-600">Exam Date: <b>${ex.preferred_date}</b> • Status: <span class="uppercase font-bold text-indigo-800">${ex.status}</span></p>
           </div>
           ${(ex.status === 'pending' || ex.status === 'approved') ? `
-            <div class="flex gap-1">
-              <button onclick="pendingAction={type:'update_exam', id:'${ex.id}', status:'passed'}; requestPasswordBeforeAction(null, 'update_exam')" class="bg-emerald-600 text-white px-2 py-1 rounded font-bold">Pass</button>
-              <button onclick="pendingAction={type:'update_exam', id:'${ex.id}', status:'failed'}; requestPasswordBeforeAction(null, 'update_exam')" class="bg-rose-600 text-white px-2 py-1 rounded font-bold">Fail</button>
+            <div class="flex gap-1.5 shrink-0">
+              <button type="button" onclick="triggerExamStatusUpdate('${ex.id}', 'passed')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1 rounded font-bold">Pass</button>
+              <button type="button" onclick="triggerExamStatusUpdate('${ex.id}', 'failed')" class="bg-rose-600 hover:bg-rose-700 text-white px-2.5 py-1 rounded font-bold">Fail</button>
             </div>
           ` : `<span class="px-2 py-0.5 rounded font-bold uppercase text-[10px] ${ex.status === 'passed' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">${ex.status}</span>`}
         </div>
@@ -622,7 +665,7 @@
       if (!res.success) return alert(res.error);
       document.getElementById('paymentForm').reset();
       document.getElementById('repPayDate').value = new Date().toISOString().split('T')[0];
-      document.getElementById('payStudentNameIndicator').textContent = 'Student Name: (Type phone above)';
+      document.getElementById('payStudentNameIndicator').textContent = 'Student: (Type phone)';
       document.getElementById('payStudentNameIndicator').className = 'text-[10px] font-bold text-indigo-700 mt-1';
       alert(`Payment recorded successfully for ${res.student_name}!`);
       loadRepData();
@@ -649,7 +692,7 @@
 
       if (!res.success) return alert(res.error);
       document.getElementById('classDeductForm').reset();
-      document.getElementById('classStudentNameIndicator').textContent = 'Student Name: (Type phone above)';
+      document.getElementById('classStudentNameIndicator').textContent = 'Student: (Type phone)';
       document.getElementById('classStudentNameIndicator').className = 'text-[10px] font-bold text-indigo-700 mt-1';
       alert(`Class deducted successfully for ${res.student_name}!`);
       loadRepData();
@@ -678,18 +721,51 @@
       if (!res.success) return alert(res.error);
       document.getElementById('examBookingForm').reset();
       document.getElementById('repBookExamDate').value = new Date().toISOString().split('T')[0];
-      document.getElementById('examStudentNameIndicator').textContent = 'Student Name: (Type phone above)';
+      document.getElementById('examStudentNameIndicator').textContent = 'Student: (Type phone)';
       document.getElementById('examStudentNameIndicator').className = 'text-[10px] font-bold text-indigo-700 mt-1';
-      alert('Exam booked successfully!');
+      alert('Exam booked successfully! Results will be sent directly by NTSA.');
+      loadRepData();
+    }
+
+    async function commitRescheduleCourse() {
+      const btn = document.getElementById('btnReschedCourse');
+      btn.disabled = true;
+      btn.textContent = 'Processing...';
+
+      const payload = {
+        phone: document.getElementById('repReschedPhone').value,
+        course_id: document.getElementById('repReschedCourse').value,
+        agreed_fee: Number(document.getElementById('repReschedFee').value),
+        total_lessons: Number(document.getElementById('repReschedLessons').value)
+      };
+
+      const res = await fetch(`${API_BASE}/api/enrollments/reschedule-course`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      }).then(r => r.json());
+
+      btn.disabled = false;
+      btn.textContent = 'Assign New Course';
+
+      if (!res.success) return alert(res.error);
+      document.getElementById('rescheduleCourseForm').reset();
+      repAutoFillReschedCourse();
+      document.getElementById('reschedStudentIndicator').textContent = 'Student: (Type phone)';
+      document.getElementById('reschedStudentIndicator').className = 'text-[10px] font-bold text-indigo-700 mt-1';
+      alert(`Student scheduled for new course: ${res.course_name}!`);
       loadRepData();
     }
 
     async function commitUpdateExam(id, status) {
-      await fetch(`${API_BASE}/api/exams/${id}`, {
+      const res = await fetch(`${API_BASE}/api/exams/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status })
-      });
+      }).then(r => r.json());
+      
+      if (!res.success) return alert(res.error || 'Failed to update exam status.');
+      alert(`Exam marked as ${status.toUpperCase()}!`);
       loadRepData();
     }
 
