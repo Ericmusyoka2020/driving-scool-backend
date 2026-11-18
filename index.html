@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,7 +11,7 @@
     <nav class="bg-slate-900 text-white px-4 sm:px-6 py-4 flex justify-between items-center shadow-md">
       <div>
         <h1 class="font-bold text-sm sm:text-lg">Movitec Central Administration</h1>
-        <p class="text-[10px] sm:text-xs text-amber-400">Manage Branches, Financial Reports, Exam Rosters & Chats</p>
+        <p class="text-[10px] sm:text-xs text-amber-400">Manage Branches, Courses, Financial Reports, Exam Rosters & Chats</p>
       </div>
       <button id="adminLogoutBtn" onclick="location.reload()" class="hidden text-xs bg-slate-800 px-3 py-1.5 rounded">Logout</button>
     </nav>
@@ -51,8 +50,8 @@
             <div class="flex items-center gap-1">
               <select id="reportPeriodType" onchange="loadAdminData()" class="border rounded px-2 py-1 text-xs bg-white font-semibold">
                 <option value="day">Day</option>
-                <option value="week">Week</option>
-                <option value="month">Month</option>
+                <option value="week">Week (7 Days)</option>
+                <option value="month">Month (30 Days)</option>
               </select>
               <input type="date" id="reportDateInput" onchange="loadAdminData()" class="border rounded px-2 py-1 text-xs bg-white font-semibold" />
             </div>
@@ -116,44 +115,61 @@
         </form>
       </div>
 
-      <!-- Register & Directory -->
+      <!-- Register, Reschedule New Course & Directory -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="bg-white p-4 sm:p-5 rounded-xl border shadow-sm">
-          <h3 class="font-bold text-sm sm:text-base mb-3">Register New Student</h3>
-          <form onsubmit="registerStudent(event)" class="space-y-2.5 text-xs">
-            <input required id="stName" placeholder="Full Name" class="w-full border rounded p-2" />
-            <input id="stEmail" type="email" placeholder="Email Address" class="w-full border rounded p-2" />
-            <div class="grid grid-cols-2 gap-2">
-              <input required id="stPhone" placeholder="Phone (07...)" class="w-full border rounded p-2" />
-              <input required id="stId" placeholder="National ID" class="w-full border rounded p-2" />
-            </div>
-            <input id="stPdl" placeholder="PDL Number" class="w-full border rounded p-2" />
-            <select required id="stBranch" class="w-full border rounded p-2 bg-white font-semibold">
-              <option value="kiganjo">Kiganjo Branch</option>
-              <option value="thika_cravers">Thika Cravers Branch</option>
-              <option value="makongeni">Makongeni Branch</option>
-              <option value="kimbo">Kimbo Branch</option>
-            </select>
-            <select required id="stCourse" onchange="autoFillCourse()" class="w-full border rounded p-2 bg-white"></select>
-            <div class="grid grid-cols-2 gap-2">
-              <input required id="stFee" type="number" placeholder="Fee (KES)" class="w-full border rounded p-2 font-semibold" />
-              <input required id="stLessons" type="number" value="24" class="w-full border rounded p-2 font-semibold" />
-            </div>
-            <button type="submit" class="w-full bg-slate-900 text-white font-bold py-2.5 rounded">Register Student</button>
-          </form>
+        <div class="space-y-6">
+          <div class="bg-white p-4 sm:p-5 rounded-xl border shadow-sm">
+            <h3 class="font-bold text-sm sm:text-base mb-3">Register New Student</h3>
+            <form onsubmit="registerStudent(event)" class="space-y-2.5 text-xs">
+              <input required id="stName" placeholder="Full Name" class="w-full border rounded p-2" />
+              <input id="stEmail" type="email" placeholder="Email Address" class="w-full border rounded p-2" />
+              <div class="grid grid-cols-2 gap-2">
+                <input required id="stPhone" placeholder="Phone (07...)" class="w-full border rounded p-2" />
+                <input required id="stId" placeholder="National ID" class="w-full border rounded p-2" />
+              </div>
+              <input id="stPdl" placeholder="PDL Number" class="w-full border rounded p-2" />
+              <select required id="stBranch" class="w-full border rounded p-2 bg-white font-semibold">
+                <option value="kiganjo">Kiganjo Branch</option>
+                <option value="thika_cravers">Thika Cravers Branch</option>
+                <option value="makongeni">Makongeni Branch</option>
+                <option value="kimbo">Kimbo Branch</option>
+              </select>
+              <select required id="stCourse" onchange="autoFillCourse()" class="w-full border rounded p-2 bg-white"></select>
+              <div class="grid grid-cols-2 gap-2">
+                <input required id="stFee" type="number" placeholder="Fee (KES)" class="w-full border rounded p-2 font-semibold" />
+                <input required id="stLessons" type="number" value="24" class="w-full border rounded p-2 font-semibold" />
+              </div>
+              <button type="submit" class="w-full bg-slate-900 text-white font-bold py-2.5 rounded">Register Student</button>
+            </form>
+          </div>
+
+          <!-- RESCHEDULE ANOTHER COURSE FOR EXISTING STUDENT -->
+          <div class="bg-white p-4 sm:p-5 rounded-xl border shadow-sm">
+            <h3 class="font-bold text-sm sm:text-base mb-1">Reschedule / Assign New Course</h3>
+            <p class="text-[11px] text-slate-500 mb-3">Enroll an existing student into another course</p>
+            <form id="adminReschedForm" onsubmit="adminRescheduleCourse(event)" class="space-y-2.5 text-xs">
+              <input required id="adminReschedPhone" placeholder="Student Phone (07...)" class="w-full border rounded p-2 font-semibold" />
+              <select required id="adminReschedCourse" onchange="adminAutoFillResched()" class="w-full border rounded p-2 bg-white"></select>
+              <div class="grid grid-cols-2 gap-2">
+                <input required id="adminReschedFee" type="number" placeholder="Fee (KES)" class="w-full border rounded p-2 font-semibold" />
+                <input required id="adminReschedLessons" type="number" value="24" placeholder="Classes" class="w-full border rounded p-2 font-semibold" />
+              </div>
+              <button type="submit" id="btnAdminResched" class="w-full bg-purple-700 text-white font-bold py-2.5 rounded">Schedule New Course</button>
+            </form>
+          </div>
         </div>
 
         <div class="lg:col-span-2 bg-white p-4 sm:p-5 rounded-xl border shadow-sm space-y-4">
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-            <h3 class="font-bold text-sm sm:text-base">Student Directory & Full Editing</h3>
+            <h3 class="font-bold text-sm sm:text-base">Student Directory & Course Management</h3>
             <input id="studentSearchInput" oninput="filterStudents()" placeholder="Search name/phone/ID..." class="w-full sm:w-64 border rounded px-3 py-1.5 text-xs" />
           </div>
-          <div class="overflow-x-auto max-h-96 overflow-y-auto">
+          <div class="overflow-x-auto max-h-[580px] overflow-y-auto">
             <table class="w-full text-left text-xs">
               <thead class="bg-slate-50 border-b">
                 <tr>
                   <th class="p-2">Name & Phone</th>
-                  <th class="p-2">Branch</th>
+                  <th class="p-2">Course & Branch</th>
                   <th class="p-2">Fee / Paid / Bal</th>
                   <th class="p-2">Lessons Left</th>
                   <th class="p-2 text-right">Actions</th>
@@ -167,10 +183,10 @@
     </main>
   </div>
 
-  <!-- EDIT STUDENT MODAL -->
+  <!-- EDIT STUDENT & CHANGE COURSE MODAL -->
   <div id="editStudentModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
     <div class="bg-white p-6 rounded-xl max-w-md w-full space-y-3 text-xs shadow-2xl">
-      <h3 class="font-bold text-base border-b pb-2">Edit Student Profile & Financials</h3>
+      <h3 class="font-bold text-base border-b pb-2">Edit Student Profile, Course & Financials</h3>
       <form onsubmit="saveEditedStudent(event)" class="space-y-2.5">
         <input type="hidden" id="editEnrollmentId" />
         <div><label class="font-semibold">Full Name</label><input required id="editName" class="w-full border rounded p-2 mt-0.5" /></div>
@@ -186,6 +202,10 @@
               <option value="kiganjo">Kiganjo</option><option value="thika_cravers">Thika Cravers</option><option value="makongeni">Makongeni</option><option value="kimbo">Kimbo</option>
             </select>
           </div>
+        </div>
+        <div>
+          <label class="font-semibold text-indigo-800">Change Course Studying</label>
+          <select id="editCourseSelect" onchange="autoUpdateFeeOnCourseChange()" class="w-full border border-indigo-300 rounded p-2 mt-0.5 bg-indigo-50/40 font-semibold"></select>
         </div>
         <div class="grid grid-cols-2 gap-2">
           <div><label class="font-semibold">Agreed Fee (KES)</label><input required id="editFee" type="number" class="w-full border rounded p-2 mt-0.5 font-semibold" /></div>
@@ -206,7 +226,7 @@
   <footer class="text-center py-6 text-xs text-slate-500 border-t bg-white">Powered by StackcraftsStudio</footer>
 
   <script>
-    const API_BASE = 'https://driving-swa8.onrender.com';
+    const API_BASE = 'http://localhost:5000';
     let courses = [], enrollments = [], allMessages = [], allStudentsMap = new Map(), activeAdminChatStudentId = null;
 
     async function handleAdminLogin(e) {
@@ -225,9 +245,14 @@
         document.getElementById('reportDateInput').value = new Date().toISOString().split('T')[0];
 
         const meta = await fetch(`${API_BASE}/api/meta`).then(r => r.json());
-        courses = meta.courses;
-        document.getElementById('stCourse').innerHTML = courses.map(c => `<option value="${c.id}" data-fee="${c.total_fee}" data-lessons="${c.total_lessons || 24}">${c.name} (KES ${c.total_fee})</option>`).join('');
+        courses = meta.courses || [];
+        const courseOptionsHtml = courses.map(c => `<option value="${c.id}" data-fee="${c.total_fee}" data-lessons="${c.total_lessons || 24}">${c.name} (KES ${c.total_fee})</option>`).join('');
+        document.getElementById('stCourse').innerHTML = courseOptionsHtml;
+        document.getElementById('adminReschedCourse').innerHTML = courseOptionsHtml;
+        document.getElementById('editCourseSelect').innerHTML = courseOptionsHtml;
+
         autoFillCourse();
+        adminAutoFillResched();
         loadAdminData();
         setInterval(loadAdminData, 5000);
       } catch (err) {
@@ -241,6 +266,24 @@
       if (opt) {
         document.getElementById('stFee').value = opt.dataset.fee;
         document.getElementById('stLessons').value = opt.dataset.lessons;
+      }
+    }
+
+    function adminAutoFillResched() {
+      const sel = document.getElementById('adminReschedCourse');
+      const opt = sel.options[sel.selectedIndex];
+      if (opt) {
+        document.getElementById('adminReschedFee').value = opt.dataset.fee;
+        document.getElementById('adminReschedLessons').value = opt.dataset.lessons;
+      }
+    }
+
+    function autoUpdateFeeOnCourseChange() {
+      const sel = document.getElementById('editCourseSelect');
+      const opt = sel.options[sel.selectedIndex];
+      if (opt) {
+        document.getElementById('editFee').value = opt.dataset.fee;
+        document.getElementById('editTotal').value = opt.dataset.lessons;
       }
     }
 
@@ -381,7 +424,7 @@
           <div class="p-2.5 border rounded flex justify-between items-center bg-slate-50">
             <div>
               <p class="font-bold text-slate-900">${ex.student?.full_name} <span class="font-normal text-slate-500">(${ex.student?.phone})</span></p>
-              <p class="text-[10px] text-slate-600">Branch: <span class="uppercase font-bold text-indigo-700">${ex.student?.branch || 'N/A'}</span> • Preferred Date: <b>${ex.preferred_date}</b></p>
+              <p class="text-[10px] text-slate-600">Course: <b>${ex.course_name}</b> • Branch: <span class="uppercase font-bold text-indigo-700">${ex.student?.branch || 'N/A'}</span> • Date: <b>${ex.preferred_date}</b></p>
             </div>
             <span class="px-2.5 py-1 rounded uppercase font-bold text-[10px] ${ex.status === 'passed' ? 'bg-emerald-100 text-emerald-800' : ex.status === 'failed' ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800'}">${ex.status}</span>
           </div>
@@ -471,14 +514,18 @@
       document.getElementById('adminEnrollmentsTable').innerHTML = list.map(e => {
         const balance = Number(e.agreed_fee) - Number(e.amount_paid);
         const safeName = (e.profiles?.full_name || '').replace(/'/g, "\\'");
+        const courseName = e.courses?.name || 'Course';
         return `
           <tr class="border-b">
             <td class="p-2 font-medium">${e.profiles?.full_name}<br><span class="text-[10px] text-slate-500">${e.profiles?.phone}</span></td>
-            <td class="p-2 uppercase font-bold text-[10px] text-indigo-700">${e.profiles?.branch || 'Unassigned'}</td>
+            <td class="p-2">
+              <span class="font-bold text-slate-900">${courseName}</span><br>
+              <span class="uppercase font-bold text-[10px] text-indigo-700">${e.profiles?.branch || 'Unassigned'}</span>
+            </td>
             <td class="p-2">Fee: ${e.agreed_fee}<br>Paid: <span class="text-emerald-600">${e.amount_paid}</span><br>Bal: <span class="text-rose-600">${Math.max(0, balance)}</span></td>
             <td class="p-2 font-bold">${e.remaining_lessons} / ${e.total_lessons}</td>
             <td class="p-2 text-right">
-              <button type="button" onclick="openEditModal('${e.id}', '${safeName}', '${e.profiles?.email || ''}', '${e.profiles?.phone || ''}', '${e.profiles?.id_number || ''}', '${e.profiles?.pdl_number || ''}', '${e.profiles?.branch || 'kiganjo'}', ${e.agreed_fee}, ${e.amount_paid}, ${e.total_lessons}, ${e.remaining_lessons})" class="bg-slate-900 text-white px-3 py-1 rounded font-bold hover:bg-slate-800">Edit</button>
+              <button type="button" onclick="openEditModal('${e.id}', '${safeName}', '${e.profiles?.email || ''}', '${e.profiles?.phone || ''}', '${e.profiles?.id_number || ''}', '${e.profiles?.pdl_number || ''}', '${e.profiles?.branch || 'kiganjo'}', '${e.course_id || ''}', ${e.agreed_fee}, ${e.amount_paid}, ${e.total_lessons}, ${e.remaining_lessons})" class="bg-slate-900 text-white px-3 py-1 rounded font-bold hover:bg-slate-800">Edit / Change Course</button>
             </td>
           </tr>
         `;
@@ -490,7 +537,7 @@
       renderStudentsTable(enrollments.filter(e => e.profiles?.full_name.toLowerCase().includes(q) || e.profiles?.phone.includes(q)));
     }
 
-    function openEditModal(id, name, email, phone, idNum, pdl, branch, fee, paid, total, remaining) {
+    function openEditModal(id, name, email, phone, idNum, pdl, branch, courseId, fee, paid, total, remaining) {
       document.getElementById('editEnrollmentId').value = id;
       document.getElementById('editName').value = name;
       document.getElementById('editEmail').value = email;
@@ -498,6 +545,7 @@
       document.getElementById('editIdNumber').value = idNum;
       document.getElementById('editPdl').value = pdl;
       document.getElementById('editBranch').value = branch;
+      if (courseId) document.getElementById('editCourseSelect').value = courseId;
       document.getElementById('editFee').value = fee;
       document.getElementById('editPaid').value = paid;
       document.getElementById('editTotal').value = total;
@@ -523,6 +571,7 @@
         id_number: document.getElementById('editIdNumber').value,
         pdl_number: document.getElementById('editPdl').value,
         branch: document.getElementById('editBranch').value,
+        course_id: document.getElementById('editCourseSelect').value,
         agreed_fee: Number(document.getElementById('editFee').value),
         amount_paid: Number(document.getElementById('editPaid').value),
         total_lessons: Number(document.getElementById('editTotal').value),
@@ -540,7 +589,36 @@
 
       if (!res.success) return alert(res.error);
       closeEditModal();
-      alert('Student updated successfully!');
+      alert('Student profile and course updated successfully!');
+      loadAdminData();
+    }
+
+    async function adminRescheduleCourse(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btnAdminResched');
+      btn.disabled = true;
+      btn.textContent = 'Processing...';
+
+      const payload = {
+        phone: document.getElementById('adminReschedPhone').value,
+        course_id: document.getElementById('adminReschedCourse').value,
+        agreed_fee: Number(document.getElementById('adminReschedFee').value),
+        total_lessons: Number(document.getElementById('adminReschedLessons').value)
+      };
+
+      const res = await fetch(`${API_BASE}/api/enrollments/reschedule-course`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      }).then(r => r.json());
+
+      btn.disabled = false;
+      btn.textContent = 'Schedule New Course';
+
+      if (!res.success) return alert(res.error);
+      document.getElementById('adminReschedForm').reset();
+      adminAutoFillResched();
+      alert(`Student scheduled for new course: ${res.course_name}!`);
       loadAdminData();
     }
 
@@ -564,6 +642,7 @@
       }).then(r => r.json());
       if (!res.success) return alert(res.error);
       e.target.reset();
+      autoFillCourse();
       alert('Student registered successfully!');
       loadAdminData();
     }
