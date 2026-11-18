@@ -4,184 +4,108 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Movitec Driving School — Student Portal (Cravers, Thika)</title>
+  <title>Movitec Driving School — Student Portal</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex flex-col justify-between">
-
   <div>
-    <!-- Navbar -->
-    <nav class="bg-slate-900 text-white px-4 sm:px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-3 shadow-md">
-      <div class="flex items-center gap-2">
-        <span class="bg-amber-500 text-slate-900 font-extrabold px-2.5 py-1 rounded text-xs sm:text-sm">MOVITEC</span>
-        <div>
-          <h1 class="font-bold text-sm sm:text-lg leading-tight">Movitec Driving School</h1>
-          <p class="text-[10px] sm:text-[11px] text-slate-400">Cravers, Thika • Student Portal</p>
-        </div>
+    <nav class="bg-slate-900 text-white px-4 sm:px-6 py-4 flex justify-between items-center shadow-md">
+      <div>
+        <h1 class="font-bold text-sm sm:text-lg">Movitec Driving School</h1>
+        <p class="text-[10px] text-amber-400" id="studentBranchBadge">Branch: Loading...</p>
       </div>
-      <div id="loggedUserBox" class="hidden text-sm flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto border-t sm:border-t-0 pt-2 sm:pt-0 border-slate-800">
-        <span id="studentNameDisplay" class="font-semibold text-amber-400 text-xs sm:text-sm truncate max-w-[200px]"></span>
-        <button onclick="logout()" class="text-xs bg-slate-800 border border-slate-700 px-3 py-1.5 rounded hover:bg-slate-700">Logout</button>
+      <div id="loggedUserBox" class="hidden flex items-center gap-3">
+        <span id="studentNameDisplay" class="font-semibold text-amber-400 text-xs sm:text-sm"></span>
+        <button onclick="logout()" class="text-xs bg-slate-800 border border-slate-700 px-3 py-1.5 rounded">Logout</button>
       </div>
     </nav>
 
-    <main class="max-w-5xl mx-auto p-4 sm:p-6 space-y-6">
-
+    <main class="max-w-5xl mx-auto p-3 sm:p-6 space-y-6">
       <!-- LOGIN / ACTIVATION -->
-      <div id="loginCard" class="bg-white p-6 sm:p-8 rounded-xl shadow-sm border border-slate-200 max-w-md mx-auto mt-8 sm:mt-12">
+      <div id="loginCard" class="bg-white p-6 sm:p-8 rounded-xl shadow-sm border border-slate-200 max-w-md mx-auto mt-8">
         <div id="loginStep1">
           <div class="text-center mb-5">
-            <span class="bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1 rounded-full">CRAVERS, THIKA</span>
-            <h2 class="text-lg sm:text-xl font-bold mt-2">Movitec Student Login</h2>
+            <span class="bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1 rounded-full">STUDENT PORTAL</span>
+            <h2 class="text-lg font-bold mt-2">Log In</h2>
           </div>
-          <form onsubmit="handleFormSubmit(event, handleLoginSubmit)" class="space-y-4">
+          <form onsubmit="handleLoginSubmit(event)" class="space-y-4">
             <input required id="loginPhone" placeholder="Phone Number (e.g. 0712345678)" class="w-full border rounded-lg px-4 py-2.5 text-sm" />
             <input required id="loginPassword" type="password" placeholder="Password" class="w-full border rounded-lg px-4 py-2.5 text-sm" />
-            <button type="submit" class="w-full bg-slate-900 text-white font-semibold py-3 rounded-lg text-sm transition">Log In</button>
+            <button type="submit" class="w-full bg-slate-900 text-white font-semibold py-3 rounded-lg text-sm">Log In</button>
           </form>
-          <div class="mt-6 pt-4 border-t text-center">
+          <div class="mt-4 text-center">
             <button onclick="switchView('verify')" class="text-xs text-amber-600 font-bold hover:underline">Activate Account using ID & Phone →</button>
           </div>
         </div>
 
         <div id="loginStepVerify" class="hidden">
           <h2 class="text-lg font-bold mb-2 text-center">Account Activation</h2>
-          <form onsubmit="handleFormSubmit(event, verifyIdentity)" class="space-y-4">
+          <form onsubmit="verifyIdentity(event)" class="space-y-4">
             <input required id="verifyIdNumber" placeholder="National ID" class="w-full border rounded-lg px-4 py-2.5 text-sm" />
             <input required id="verifyPhone" placeholder="Phone Number" class="w-full border rounded-lg px-4 py-2.5 text-sm" />
-            <button type="submit" class="w-full bg-amber-500 text-slate-900 font-bold py-3 rounded-lg text-sm transition">Verify ID</button>
+            <button type="submit" class="w-full bg-amber-500 text-slate-900 font-bold py-3 rounded-lg text-sm">Verify ID</button>
           </form>
-          <button onclick="switchView('login')" class="w-full mt-3 text-xs text-slate-500 hover:underline">← Back to Login</button>
+          <button onclick="switchView('login')" class="w-full mt-3 text-xs text-slate-500">← Back</button>
         </div>
 
         <div id="loginStepPassword" class="hidden">
           <h2 class="text-lg font-bold mb-2 text-center">Create Password</h2>
-          <form onsubmit="handleFormSubmit(event, savePassword)" class="space-y-4">
-            <input required id="newPassword" type="password" placeholder="New Password (min 4 chars)" class="w-full border rounded-lg px-4 py-2.5 text-sm" />
-            <button type="submit" class="w-full bg-emerald-600 text-white font-semibold py-3 rounded-lg text-sm transition">Save Password</button>
+          <form onsubmit="savePassword(event)" class="space-y-4">
+            <input required id="newPassword" type="password" placeholder="New Password" class="w-full border rounded-lg px-4 py-2.5 text-sm" />
+            <button type="submit" class="w-full bg-emerald-600 text-white font-semibold py-3 rounded-lg text-sm">Save Password</button>
           </form>
         </div>
       </div>
 
-      <!-- STUDENT DASHBOARD -->
+      <!-- DASHBOARD -->
       <div id="studentDashboard" class="hidden space-y-6">
-
-        <div id="finishedClassesBanner" class="hidden bg-emerald-600 text-white p-4 rounded-xl shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div class="bg-slate-900 text-white p-4 rounded-xl shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
           <div>
-            <p class="font-extrabold text-sm sm:text-base">🎓 Congratulations! Finished Classes</p>
-            <p class="text-xs text-emerald-100">Use the "Book Upcoming Exam" box below to request your exam slot.</p>
+            <p class="text-[10px] uppercase tracking-wider text-amber-400 font-bold">Active Course Studying</p>
+            <h2 class="text-base sm:text-lg font-bold" id="stCourseTitleDisplay">Loading Course...</h2>
           </div>
-          <span class="bg-white text-emerald-800 text-xs font-extrabold px-3 py-1 rounded-full">COMPLETED</span>
+          <span class="bg-slate-800 text-slate-200 px-3 py-1 rounded-full text-xs font-semibold" id="stPdlDisplay">PDL: N/A</span>
         </div>
 
-        <!-- Summary Cards -->
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-          <div class="bg-white p-4 sm:p-5 rounded-xl border border-slate-200 shadow-sm"><p class="text-[11px] sm:text-xs text-slate-500 uppercase font-semibold">Remaining Classes</p><p class="text-xl sm:text-2xl font-extrabold text-amber-600 mt-1" id="stRemainingLessons">0 / 24</p></div>
-          <div class="bg-white p-4 sm:p-5 rounded-xl border border-slate-200 shadow-sm"><p class="text-[11px] sm:text-xs text-slate-500 uppercase font-semibold">Course Fee</p><p class="text-xl sm:text-2xl font-bold mt-1" id="stTotalFee">KES 0</p></div>
-          <div class="bg-white p-4 sm:p-5 rounded-xl border border-slate-200 shadow-sm"><p class="text-[11px] sm:text-xs text-slate-500 uppercase font-semibold">Approved Paid</p><p class="text-xl sm:text-2xl font-bold text-emerald-600 mt-1" id="stTotalPaid">KES 0</p></div>
-          <div class="bg-white p-4 sm:p-5 rounded-xl border border-slate-200 shadow-sm"><p class="text-[11px] sm:text-xs text-slate-500 uppercase font-semibold">Balance</p><p class="text-xl sm:text-2xl font-bold text-rose-600 mt-1" id="stBalance">KES 0</p></div>
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div class="bg-white p-4 rounded-xl border shadow-sm"><p class="text-xs text-slate-500">Remaining Classes</p><p class="text-xl font-extrabold text-amber-600 mt-1" id="stRemainingLessons">0</p></div>
+          <div class="bg-white p-4 rounded-xl border shadow-sm"><p class="text-xs text-slate-500">Course Fee</p><p class="text-xl font-bold mt-1" id="stTotalFee">KES 0</p></div>
+          <div class="bg-white p-4 rounded-xl border shadow-sm"><p class="text-xs text-slate-500">Amount Paid</p><p class="text-xl font-bold text-emerald-600 mt-1" id="stTotalPaid">KES 0</p></div>
+          <div class="bg-white p-4 rounded-xl border shadow-sm"><p class="text-xs text-slate-500">Fee Balance</p><p class="text-xl font-bold text-rose-600 mt-1" id="stBalance">KES 0</p></div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
-          <div id="bookClassCard" class="bg-white p-4 sm:p-5 rounded-xl border border-slate-200 shadow-sm">
-            <h3 class="font-bold text-base mb-1">Schedule Driving Class</h3>
-            <form onsubmit="handleFormSubmit(event, bookLesson)" class="space-y-3 text-sm mt-3">
-              <select required id="bookType" class="w-full border rounded-lg px-3 py-2 bg-white"><option value="practical">Practical Lesson</option><option value="theory">Theory Class</option></select>
-              <input required id="bookDateTime" type="datetime-local" class="w-full border rounded-lg px-3 py-2" />
-              <button type="submit" class="w-full bg-amber-500 font-bold py-2.5 rounded-lg transition">Request Class Slot</button>
-            </form>
+        <div id="examBookingSection"></div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="bg-white p-4 sm:p-5 rounded-xl border shadow-sm flex flex-col h-[400px]">
+            <h3 class="font-bold text-base mb-1">System Inbox</h3>
+            <p class="text-[11px] text-slate-500 mb-3">Official records of class deductions, payments, NTSA exam updates, and notices.</p>
+            <div id="studentNotifications" class="space-y-2.5 flex-1 overflow-y-auto text-xs"></div>
           </div>
 
-          <div id="bookExamCard" class="hidden bg-white p-4 sm:p-5 rounded-xl border-2 border-indigo-400 shadow-sm">
-            <h3 class="font-bold text-base text-indigo-950 mb-1">🎓 Book Upcoming Exam</h3>
-            <form onsubmit="handleFormSubmit(event, bookExam)" class="space-y-3 text-sm mt-3">
-              <input required id="examPrefDate" type="date" class="w-full border rounded-lg px-3 py-2" />
-              <input id="examNotes" placeholder="Notes (optional)" class="w-full border rounded-lg px-3 py-2" />
-              <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-2.5 rounded-lg transition">Submit Exam Request</button>
-            </form>
-          </div>
-
-          <div id="submitPaymentCard" class="bg-white p-4 sm:p-5 rounded-xl border border-slate-200 shadow-sm">
-            <h3 class="font-bold text-base mb-1">Submit Fee Payment</h3>
-            <form onsubmit="handleFormSubmit(event, submitFeePayment)" class="space-y-3 text-sm mt-3">
-              <input required id="subPayAmount" type="number" placeholder="Amount (KES)" class="w-full border rounded-lg px-3 py-2 font-semibold" />
-              <div class="grid grid-cols-2 gap-2">
-                <select required id="subPayMethod" class="w-full border rounded-lg px-3 py-2 bg-white"><option value="mpesa_manual">M-Pesa</option><option value="bank_transfer">Bank</option><option value="cash">Cash</option></select>
-                <input required id="subPayRef" placeholder="Code / Ref" class="w-full border rounded-lg px-3 py-2" />
-              </div>
-              <button type="submit" class="w-full bg-emerald-600 text-white font-semibold py-2.5 rounded-lg transition">Submit Payment</button>
-            </form>
-          </div>
-
-          <div id="paymentClearedCard" class="hidden bg-emerald-50 p-5 rounded-xl border-2 border-emerald-400 shadow-sm flex flex-col justify-center items-center text-center">
-            <div class="w-12 h-12 bg-emerald-600 text-white rounded-full flex items-center justify-center text-2xl font-bold mb-3">✓</div>
-            <h3 class="font-extrabold text-lg text-emerald-900">Congratulations! You have cleared your payment</h3>
-            <p class="text-xs text-emerald-700 mt-1">Your total course fee is 100% settled.</p>
-          </div>
-        </div>
-
-        <!-- STUDENT REQUEST HISTORY REFERENCE PANEL -->
-        <div class="bg-white p-4 sm:p-5 rounded-xl border border-slate-200 shadow-sm space-y-3">
-          <h3 class="font-bold text-base">My Request History Reference (Classes, Payments & Exams)</h3>
-          <div id="studentRequestHistoryList" class="space-y-2.5 text-xs max-h-72 overflow-y-auto"></div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
-          <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col h-[400px]">
-            <div class="bg-[#075E54] text-white px-4 py-3"><h3 class="font-bold text-sm">Movitec Admin Chat</h3><p class="text-[11px] text-emerald-100">Live Support</p></div>
+          <div class="bg-white rounded-xl border shadow-sm overflow-hidden flex flex-col h-[400px]">
+            <div class="bg-[#075E54] text-white px-4 py-3"><h3 class="font-bold text-sm">Branch & Admin Chat</h3></div>
             <div id="studentChatHistory" class="flex-1 p-3 bg-[#efeae2] overflow-y-auto space-y-2 text-sm"></div>
-            <form onsubmit="handleFormSubmit(event, sendStudentMessage)" class="bg-[#f0f2f5] p-2.5 flex gap-2 border-t">
-              <input required id="studentMsgInput" placeholder="Type message..." class="flex-1 bg-white rounded-full px-4 py-2 text-sm focus:outline-none shadow-sm" />
-              <button type="submit" class="bg-[#00a884] text-white font-bold px-4 py-2 rounded-full text-sm transition">Send</button>
+            <form onsubmit="sendStudentMessage(event)" class="bg-[#f0f2f5] p-2.5 flex gap-2 border-t">
+              <input required id="studentMsgInput" placeholder="Ask a question..." class="flex-1 bg-white rounded-full px-4 py-2 text-sm" />
+              <button type="submit" class="bg-[#00a884] text-white font-bold px-4 py-2 rounded-full text-sm">Send</button>
             </form>
-          </div>
-
-          <div class="bg-white p-4 sm:p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col h-[400px]">
-            <h3 class="font-bold text-base mb-3">System Inbox</h3>
-            <div id="studentNotifications" class="space-y-3 flex-1 overflow-y-auto"></div>
           </div>
         </div>
 
+        <div class="bg-white p-4 sm:p-5 rounded-xl border shadow-sm space-y-3">
+          <h3 class="font-bold text-base">My Class & Payment Records</h3>
+          <div id="studentRequestHistoryList" class="space-y-2 text-xs max-h-60 overflow-y-auto"></div>
+        </div>
       </div>
     </main>
   </div>
 
-  <!-- Footer -->
-  <footer class="text-center py-6 text-xs text-slate-500 border-t mt-12 bg-white">
-    Powered by <a href="https://stackcrafts.com" target="_blank" class="underline font-semibold hover:text-slate-700">stackcraftsstudio</a> • All rights reserved.
-  </footer>
+  <footer class="text-center py-6 text-xs text-slate-500 border-t bg-white">Powered by StackcraftsStudio</footer>
 
   <script>
     const API_BASE = 'https://driving-swa8.onrender.com';
-    let currentStudent = null, currentEnrollment = null, temporaryStudentId = null, studentChatPoll = null;
-
-    // Helper wrapper to handle double-click protection ("Processing..." & Hide)
-    async function handleFormSubmit(e, callback) {
-      e.preventDefault();
-      const submitBtn = e.target.querySelector('button[type="submit"]') || e.submitter;
-      
-      let originalText = '';
-      if (submitBtn) {
-        originalText = submitBtn.innerHTML;
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = 'Processing...';
-      }
-
-      try {
-        await callback(e);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        if (submitBtn) {
-          submitBtn.classList.add('hidden');
-          setTimeout(() => {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = originalText;
-            submitBtn.classList.remove('hidden');
-          }, 1500);
-        }
-      }
-    }
+    let currentStudent = null, currentEnrollment = null, tempId = null, pollTimer = null;
 
     function switchView(view) {
       document.getElementById('loginStep1').classList.toggle('hidden', view !== 'login');
@@ -190,6 +114,7 @@
     }
 
     async function handleLoginSubmit(e) {
+      e.preventDefault();
       const res = await fetch(`${API_BASE}/api/students/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -201,21 +126,23 @@
     }
 
     async function verifyIdentity(e) {
+      e.preventDefault();
       const res = await fetch(`${API_BASE}/api/students/verify-identity`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id_number: document.getElementById('verifyIdNumber').value, phone: document.getElementById('verifyPhone').value })
       }).then(r => r.json());
       if (!res.success) return alert(res.error);
-      temporaryStudentId = res.student_id;
+      tempId = res.student_id;
       switchView('password');
     }
 
     async function savePassword(e) {
+      e.preventDefault();
       await fetch(`${API_BASE}/api/students/set-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ student_id: temporaryStudentId, password: document.getElementById('newPassword').value })
+        body: JSON.stringify({ student_id: tempId, password: document.getElementById('newPassword').value })
       });
       alert('Password saved! Please log in.');
       switchView('login');
@@ -225,48 +152,63 @@
       document.getElementById('loginCard').classList.add('hidden');
       document.getElementById('studentDashboard').classList.remove('hidden');
       document.getElementById('loggedUserBox').classList.remove('hidden');
-      document.getElementById('studentNameDisplay').textContent = `${currentStudent.full_name} (${currentStudent.phone})`;
+      document.getElementById('studentNameDisplay').textContent = currentStudent.full_name;
+      document.getElementById('studentBranchBadge').textContent = `Branch: ${(currentStudent.branch || 'Unassigned').toUpperCase()}`;
+      document.getElementById('stPdlDisplay').textContent = `PDL: ${currentStudent.pdl_number || 'None'}`;
 
-      await Promise.all([loadStudentFees(), loadStudentRequestHistory(), loadStudentMessages(), loadStudentNotifications()]);
-
-      if (studentChatPoll) clearInterval(studentChatPoll);
-      studentChatPoll = setInterval(() => {
-        if (currentStudent) {
-          loadStudentFees();
-          loadStudentRequestHistory();
-          loadStudentMessages();
-          loadStudentNotifications();
-        }
-      }, 4000);
+      await loadAllStudentData();
+      if (pollTimer) clearInterval(pollTimer);
+      pollTimer = setInterval(loadAllStudentData, 5000);
     }
 
-    async function loadStudentFees() {
+    async function loadAllStudentData() {
+      await Promise.all([loadFeesAndStatus(), loadHistory(), loadMessages(), loadNotifications()]);
+    }
+
+    async function loadFeesAndStatus() {
       const res = await fetch(`${API_BASE}/api/students/${currentStudent.id}/fees`).then(r => r.json());
       if (!res.enrollment) return;
       currentEnrollment = res.enrollment;
 
-      const isFinished = res.enrollment.status === 'completed';
-      const balance = Number(res.enrollment.agreed_fee) - Number(res.enrollment.amount_paid);
-      const isCleared = balance <= 0;
+      document.getElementById('stCourseTitleDisplay').textContent = res.enrollment.courses?.name || 'Driving Course';
 
-      document.getElementById('finishedClassesBanner').classList.toggle('hidden', !isFinished);
-      document.getElementById('bookClassCard').classList.toggle('hidden', isFinished);
-      document.getElementById('bookExamCard').classList.toggle('hidden', !isFinished);
+      const balance = Math.max(0, Number(res.enrollment.agreed_fee) - Number(res.enrollment.amount_paid));
+      const remainingClasses = Number(res.enrollment.remaining_lessons);
+      const isEligibleForExam = res.enrollment.status === 'completed' || (remainingClasses === 0 && balance === 0);
 
-      document.getElementById('submitPaymentCard').classList.toggle('hidden', isCleared);
-      document.getElementById('paymentClearedCard').classList.toggle('hidden', !isCleared);
-
-      document.getElementById('stRemainingLessons').textContent = isFinished ? 'COMPLETED' : `${res.enrollment.remaining_lessons} / ${res.enrollment.total_lessons}`;
+      document.getElementById('stRemainingLessons').textContent = remainingClasses === 0 ? 'DONE (0)' : remainingClasses;
       document.getElementById('stTotalFee').textContent = `KES ${res.enrollment.agreed_fee}`;
       document.getElementById('stTotalPaid').textContent = `KES ${res.enrollment.amount_paid}`;
+      document.getElementById('stBalance').textContent = `KES ${balance}`;
 
-      const balEl = document.getElementById('stBalance');
-      balEl.textContent = `KES ${Math.max(0, balance)}`;
-      balEl.classList.toggle('text-rose-600', !isCleared);
-      balEl.classList.toggle('text-emerald-600', isCleared);
+      const examSection = document.getElementById('examBookingSection');
+      if (isEligibleForExam) {
+        const exams = await fetch(`${API_BASE}/api/exams?student_id=${currentStudent.id}`).then(r => r.json());
+        const activeExam = (exams || []).find(ex => ex.status === 'pending' || ex.status === 'approved' || ex.status === 'passed');
+
+        if (activeExam && activeExam.status === 'passed') {
+          examSection.innerHTML = `<div class="bg-emerald-50 p-5 rounded-xl border border-emerald-300 text-center"><h3 class="font-extrabold text-lg text-emerald-900">🎉 Congratulations! You Passed Your Driving Exam</h3><p class="text-xs text-emerald-700 mt-1">Official results and license processing will be sent directly by <b>NTSA</b>.</p></div>`;
+        } else if (activeExam) {
+          examSection.innerHTML = `<div class="bg-indigo-50 p-5 rounded-xl border border-indigo-300 text-center"><h3 class="font-bold text-base text-indigo-900">🎓 Exam Booked for ${activeExam.preferred_date}</h3><p class="text-xs text-indigo-700 mt-1">Status: <b>${activeExam.status.toUpperCase()}</b> • Results will be sent directly by <b>NTSA</b>.</p></div>`;
+        } else {
+          examSection.innerHTML = `
+            <div class="bg-indigo-50 p-5 rounded-xl border border-indigo-200">
+              <h3 class="font-bold text-base text-indigo-950 mb-1">🎓 Classes Completed — Book Your Driving Exam</h3>
+              <p class="text-xs text-indigo-700 mb-3">Select your preferred exam date below. Official results will be sent to you directly by <b>NTSA</b>.</p>
+              <form onsubmit="bookExam(event)" class="flex flex-col sm:flex-row gap-2 text-sm">
+                <input required id="examPrefDate" type="date" class="border rounded-lg px-3 py-2 bg-white font-semibold" />
+                <input required id="examNotes" placeholder="Preferred Test Center *" class="flex-1 border rounded-lg px-3 py-2 bg-white" />
+                <button type="submit" class="bg-indigo-600 text-white font-bold px-5 py-2 rounded-lg">Book Exam</button>
+              </form>
+            </div>
+          `;
+        }
+      } else {
+        examSection.innerHTML = '';
+      }
     }
 
-    async function loadStudentRequestHistory() {
+    async function loadHistory() {
       const [lessons, payments, exams] = await Promise.all([
         fetch(`${API_BASE}/api/lessons?student_id=${currentStudent.id}`).then(r => r.json()),
         fetch(`${API_BASE}/api/payments?student_id=${currentStudent.id}`).then(r => r.json()),
@@ -274,122 +216,76 @@
       ]);
 
       let html = '';
-
       (lessons || []).forEach(l => {
-        html += `<div class="p-3 rounded-lg border bg-slate-50 flex justify-between items-center gap-2">
-          <div>
-            <p class="font-bold capitalize">Class Booking: ${l.lesson_type}</p>
-            <p class="text-[11px] text-slate-600">Date: ${new Date(l.scheduled_at).toLocaleString()}</p>
-            ${l.status === 'rejected' ? `<p class="text-[11px] text-rose-600 font-semibold mt-0.5">Reason: ${l.rejection_reason || 'None'}</p>` : ''}
-            ${l.instructor_remarks ? `<p class="text-[11px] text-emerald-700 font-semibold mt-0.5">Instructor Remarks: ${l.instructor_remarks}</p>` : ''}
-          </div>
-          <span class="text-[10px] px-2.5 py-1 rounded font-bold uppercase ${l.status === 'approved' || l.status === 'completed' ? 'bg-emerald-100 text-emerald-800' : l.status === 'rejected' ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800'}">${l.status}</span>
-        </div>`;
+        const dt = new Date(l.scheduled_at).toLocaleString('en-KE', { dateStyle: 'medium', timeStyle: 'short' });
+        html += `<div class="p-2.5 rounded border bg-slate-50 flex justify-between items-center"><div><p class="font-bold capitalize">Class Deducted: ${l.lesson_type}</p><p class="text-[10px] text-slate-500">${dt} ${l.instructor_remarks ? '• ' + l.instructor_remarks : ''}</p></div><span class="text-[10px] px-2 py-0.5 rounded font-bold uppercase bg-emerald-100 text-emerald-800">${l.status}</span></div>`;
       });
-
       (payments || []).forEach(p => {
-        html += `<div class="p-3 rounded-lg border bg-slate-50 flex justify-between items-center gap-2">
-          <div>
-            <p class="font-bold">Payment: KES ${p.amount} (${p.payment_method})</p>
-            <p class="text-[11px] text-slate-600">Ref: ${p.reference_code || 'N/A'}</p>
-            ${p.status === 'rejected' ? `<p class="text-[11px] text-rose-600 font-semibold mt-0.5">Reason: ${p.rejection_reason || 'None'}</p>` : ''}
-          </div>
-          <span class="text-[10px] px-2.5 py-1 rounded font-bold uppercase ${p.status === 'approved' ? 'bg-emerald-100 text-emerald-800' : p.status === 'rejected' ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800'}">${p.status}</span>
-        </div>`;
+        const dt = new Date(p.paid_at).toLocaleString('en-KE', { dateStyle: 'medium', timeStyle: 'short' });
+        const mLabel = p.payment_method === 'cash' ? 'Cash' : 'Send to School';
+        html += `<div class="p-2.5 rounded border bg-slate-50 flex justify-between items-center"><div><p class="font-bold">Fee Paid: KES ${p.amount} (${mLabel})</p><p class="text-[10px] text-slate-500">${dt} • Ref: ${p.reference_code}</p></div><span class="text-[10px] px-2 py-0.5 rounded font-bold uppercase bg-emerald-100 text-emerald-800">${p.status}</span></div>`;
       });
-
       (exams || []).forEach(ex => {
-        html += `<div class="p-3 rounded-lg border bg-indigo-50/40 border-indigo-200 flex justify-between items-center gap-2">
-          <div>
-            <p class="font-bold">Exam Request (Preferred: ${ex.preferred_date})</p>
-            ${ex.status === 'approved' && ex.exam_datetime ? `<p class="text-[11px] text-emerald-800 font-extrabold mt-0.5">✓ OFFICIAL EXAM TIME: ${new Date(ex.exam_datetime).toLocaleString()}</p>` : ''}
-            ${ex.status === 'rejected' ? `<p class="text-[11px] text-rose-600 font-semibold mt-0.5">Reason: ${ex.rejection_reason || 'None'}</p>` : ''}
-          </div>
-          <span class="text-[10px] px-2.5 py-1 rounded font-bold uppercase ${ex.status === 'approved' ? 'bg-emerald-100 text-emerald-800' : ex.status === 'rejected' ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800'}">${ex.status}</span>
-        </div>`;
+        html += `<div class="p-2.5 rounded border bg-indigo-50 flex justify-between items-center"><div><p class="font-bold">Exam Booking (${ex.preferred_date}) — Results via NTSA</p></div><span class="text-[10px] px-2 py-0.5 rounded font-bold uppercase ${ex.status === 'passed' ? 'bg-emerald-100 text-emerald-800' : ex.status === 'failed' ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800'}">${ex.status}</span></div>`;
       });
-
-      document.getElementById('studentRequestHistoryList').innerHTML = html || '<p class="text-slate-400">No requests submitted yet.</p>';
-    }
-
-    async function bookLesson(e) {
-      await fetch(`${API_BASE}/api/lessons`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ student_id: currentStudent.id, lesson_type: document.getElementById('bookType').value, scheduled_at: new Date(document.getElementById('bookDateTime').value).toISOString() })
-      });
-      e.target.reset();
-      alert('Class requested!');
-      await loadStudentRequestHistory();
+      document.getElementById('studentRequestHistoryList').innerHTML = html || '<p class="text-slate-400">No class or payment records yet.</p>';
     }
 
     async function bookExam(e) {
-      await fetch(`${API_BASE}/api/exams`, {
+      e.preventDefault();
+      const res = await fetch(`${API_BASE}/api/exams`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ student_id: currentStudent.id, preferred_date: document.getElementById('examPrefDate').value, notes: document.getElementById('examNotes').value })
-      });
-      e.target.reset();
-      alert('Exam request submitted to Admin!');
-      await loadStudentRequestHistory();
+      }).then(r => r.json());
+      if (!res.success) return alert(res.error);
+      alert('Exam booked successfully! Your results will be sent directly by NTSA.');
+      loadAllStudentData();
     }
 
-    async function submitFeePayment(e) {
-      await fetch(`${API_BASE}/api/payments`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ enrollment_id: currentEnrollment.id, student_id: currentStudent.id, amount: Number(document.getElementById('subPayAmount').value), payment_method: document.getElementById('subPayMethod').value, reference_code: document.getElementById('subPayRef').value, status: 'pending' })
-      });
-      e.target.reset();
-      alert('Payment submitted for approval!');
-      await Promise.all([loadStudentFees(), loadStudentRequestHistory()]);
-    }
-
-    async function loadStudentMessages() {
+    async function loadMessages() {
       const container = document.getElementById('studentChatHistory');
       const msgs = await fetch(`${API_BASE}/api/messages?student_id=${currentStudent.id}`).then(r => r.json());
-      if (!Array.isArray(msgs)) return;
-      container.innerHTML = msgs.map(m => {
-        const isMe = m.sender_role === 'student';
-        return `
-          <div class="flex ${isMe ? 'justify-end' : 'justify-start'}">
-            <div class="max-w-[85%] sm:max-w-[80%] px-3 py-2 rounded-lg shadow-sm ${isMe ? 'bg-[#d9fdd3]' : 'bg-white'}">
-              <p class="text-[10px] font-bold ${isMe ? 'text-emerald-800' : 'text-amber-700'}">${isMe ? 'You' : m.sender_name}</p>
-              <p class="text-xs whitespace-pre-wrap">${m.message}</p>
-              <p class="text-[9px] text-slate-400 text-right mt-1">${new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
-            </div>
+      container.innerHTML = (msgs || []).map(m => `
+        <div class="flex ${m.sender_role === 'student' ? 'justify-end' : 'justify-start'}">
+          <div class="max-w-[80%] px-3 py-2 rounded-lg shadow-sm ${m.sender_role === 'student' ? 'bg-[#d9fdd3]' : 'bg-white'}">
+            <p class="text-[10px] font-bold">${m.sender_name}</p>
+            <p class="text-xs">${m.message}</p>
           </div>
-        `;
-      }).join('') || '<div class="h-full flex items-center justify-center"><span class="text-xs text-slate-400">Say hello to Admin!</span></div>';
+        </div>
+      `).join('') || '<div class="text-center text-xs text-slate-400">No messages</div>';
       container.scrollTop = container.scrollHeight;
     }
 
     async function sendStudentMessage(e) {
+      e.preventDefault();
       const input = document.getElementById('studentMsgInput');
-      const msg = input.value;
-      input.value = '';
       await fetch(`${API_BASE}/api/messages`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ student_id: currentStudent.id, sender_role: 'student', sender_name: currentStudent.full_name, message: msg })
+        body: JSON.stringify({ student_id: currentStudent.id, sender_role: 'student', sender_name: currentStudent.full_name, message: input.value })
       });
-      await loadStudentMessages();
+      input.value = '';
+      loadMessages();
     }
 
-    async function loadStudentNotifications() {
+    async function loadNotifications() {
       const list = await fetch(`${API_BASE}/api/notifications/${currentStudent.id}`).then(r => r.json());
-      document.getElementById('studentNotifications').innerHTML = (list || []).map(n => `
-        <div class="p-3 rounded-lg border bg-amber-50/60 border-amber-300">
-          <p class="font-bold text-sm">${n.title}</p>
-          <p class="text-xs text-slate-600 mt-0.5">${n.message}</p>
-        </div>
-      `).join('') || '<p class="text-slate-400 text-sm">No notifications.</p>';
+      document.getElementById('studentNotifications').innerHTML = (list || []).map(n => {
+        const dt = n.created_at ? new Date(n.created_at).toLocaleString('en-KE', { dateStyle: 'medium', timeStyle: 'short' }) : '';
+        return `
+          <div class="p-2.5 rounded border bg-amber-50/70">
+            <div class="flex justify-between items-start gap-2">
+              <p class="font-bold text-slate-900">${n.title}</p>
+              <span class="text-[9px] text-slate-500 whitespace-nowrap">${dt}</span>
+            </div>
+            <p class="text-slate-700 mt-0.5">${n.message}</p>
+          </div>
+        `;
+      }).join('') || '<p class="text-slate-400 text-xs">No inbox records yet.</p>';
     }
 
-    function logout() {
-      if (studentChatPoll) clearInterval(studentChatPoll);
-      location.reload();
-    }
+    function logout() { location.reload(); }
   </script>
 </body>
 </html>
